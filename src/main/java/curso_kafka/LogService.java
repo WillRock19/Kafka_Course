@@ -33,7 +33,6 @@ public class LogService {
 		}	
 	}
 
-	
 	private static Properties produceProperties() {
 		var properties = new Properties();
 		
@@ -45,5 +44,4 @@ public class LogService {
 				
 		return properties;
 	}
-
 }
