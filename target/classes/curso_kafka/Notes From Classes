@@ -58,19 +58,23 @@
 	FraudDetectorService-239f22a1-ac93-48e2-b225-85cb34639d1e ECOMMERCE_NEW_ORDER 			2          			48              	48               0               consumer-FraudDetectorService-239f22a1-ac93-48e2-b225-85cb34639d1e-1-8931d409-9005-4bb6-812a-1188d4a845f4 		/192.168.0.4    consumer-FraudDetectorService-239f22a1-ac93-48e2-b225-85cb34639d1e-1
  * 
  * Kafka's will rebalance by its own, following it's own properties */
- 
- 
- /*														CLASS 03_Refactoring Project
- * 
  *
-/*													  CLASS 04_Customized Serialization
+ *
+ *
+*														CLASS 03_Refactoring Project
+* 
+*
+*	OBS: See Commits referent to Class 03 to see what was done here
+*
+*
+*													  CLASS 04_Customized Serialization
 * 
 *
 *   01. Stop using the temp directory for zookeper and kafka log's files.
 *
-*	By default, the Kafka's server.properties and zookeper will put my messages in a temporary directory. 
-*	That means that they might disapear with time. To deal with this, we need to create a directory to put our messages
-*	and explain to the server.properties and to zookeper where is that directory. 
+*		By default, the Kafka's server.properties and zookeper will put my messages in a temporary directory. 
+*		That means that they might disapear with time. To deal with this, we need to create a directory to put our messages
+*		and explain to the server.properties and to zookeper where is that directory. 
 *
 *	To do so, follow the steps:
 *
@@ -83,9 +87,58 @@
 *			3.2. Change it to the path of the folder for you created in step 1;
 *
 *		OBS: remember to use the /Kafka/my_data/kafka style of directory, where C:\Kafka\... is write only as /Kafka/...
-*		
 *
-*/
-    
- 
- 
+*	02. About adding the creation of a GSON Deserializer 
+*
+* 		When we try to deserialize, we have a byte array that is going to be deserialized in a type.
+* 		we need to know which is going to be te type to where we are going to deserialize. The GSON
+* 		library, different from others, does not try to implicit understand what is this type, so we
+* 		have to tell him by passing the type as a second parameter.
+* 
+* 		Then, we are stuck in another problem: how are we going to know that, since a consumer can
+* 		be a string, a Order, anything? Well, first of all, we have to get the type. We can't use T, 
+* 		because T is a type generated in excution time, not compile time. But, for our luck, the kafka's
+* 		Deserializer class has a method we can override to get that information; it is called configure.
+* 
+* 	02.1. About the configure Method
+*
+* 		This method will get all of kafka's configuration, that will be passed in the produceProperties
+* 		from the consumer services we create. So, to deal with the problem that we have in the deserialize
+* 		method, we are going to pass, in the properties, the type of the class to which we are going to
+* 		deserialize our bytes, and get that information inside of this configure() method (kafka will give
+* 		it to us, thankfully).
+* 
+* 		Once we set up the configure() method and the property inside our KafkaService class, we can use 
+* 		the type here without problems :)
+*
+*
+*  	03. About the creation on an Email class
+*
+*		The use of GsonSerializer will throw an exception when we try to execute a message that is just a string,
+* 		because a string is not a valid JSON, and the Gson will try to convert the message to a valid JSON.
+* 
+* 		Crap baskets, hum?
+* 
+* 		A way to deal with this is create a "shell" to represent our pure message, so it might be converted
+* 		to a valid JSON (in this case, the message in question will be the message o email. So we will create
+* 		a email class to represent it. 
+* 		 	 
+*	04. About changes in Log class
+*
+* 		Log will be a rare scenario where we can receive messages of any type and want to deserialize it.
+* 		The problem is: if we just use String.class as the type, it will throw an error when it receives 
+* 		a different type.
+* 
+*  		To deal with this, we need a way to inform which are the "different" properties that our log may
+*  		need to deserialize. We can do this passing a builder, or just informing in some other way. Here
+*  		we are going to inform it passing a Map to the KafkaService's constructor, and that Map will 
+*  		contain extra properties that we want to be added in the properties that will be passed on creating
+*  		our Kafka's consumer. 
+*
+* 	05. Other points to mention:
+* 
+*  		I. Receiving the type of class to be deserealized in from the custom consumers;
+*  		II. Receiving new properties via constructor from the custom consumers to be added on KafkaConsumer instantiation;
+*  	
+*  		To see this and more, look for the comments in the commit before this (ENGING CLASS 04).
+* 

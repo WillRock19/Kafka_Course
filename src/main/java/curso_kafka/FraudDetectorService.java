@@ -16,7 +16,7 @@ public class FraudDetectorService {
 				"ECOMMERCE_NEW_ORDER",  
 				fraudService::parseRecord,
 				Order.class,
-				new HashMap<>())) /*We will pass an empty map of properties, since we don't want to add nothing more (we could use, for java, a Map.of() either)*/
+				new HashMap<>()))
 		{
 			service.run();
 		}	

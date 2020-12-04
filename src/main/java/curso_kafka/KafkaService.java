@@ -66,15 +66,6 @@ class KafkaService<T> implements Closeable
 		properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");	
 		properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		
-		/* The use of GsonSerializer will throw an exception when we try to execute a message that is just a string,
-		 * because a string is not a valid JSON, and the Gson will try to convert the message to a valid JSON.
-		 * 
-		 * Crap baskets, hum?
-		 * 
-		 * A way to deal with this is create a "shell" to represent our pure message, so it might be converted
-		 * to a valid JSON (in this case, the message in question will be the message o email. So we will create
-		 * a email class to represent it. 
-		 */
 		properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, GsonDeserializer.class.getName());
 		
 		properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupID);

@@ -15,7 +15,7 @@ public class EmailService {
 				"ECOMMERCE_SEND_EMAIL", 
 				emailService::parseRecord,
 				String.class,
-				Map.of())) /*We will pass an empty map of properties, since we don't want to add nothing more (we could use, for java, a new HashMap<>() either)*/
+				Map.of()))
 		{
 			service.run();
 		}
