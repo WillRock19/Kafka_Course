@@ -60,3 +60,32 @@
  * Kafka's will rebalance by its own, following it's own properties */
  
  
+ /*														CLASS 03_Refactoring Project
+ * 
+ *
+/*													  CLASS 04_Customized Serialization
+* 
+*
+*   01. Stop using the temp directory for zookeper and kafka log's files.
+*
+*	By default, the Kafka's server.properties and zookeper will put my messages in a temporary directory. 
+*	That means that they might disapear with time. To deal with this, we need to create a directory to put our messages
+*	and explain to the server.properties and to zookeper where is that directory. 
+*
+*	To do so, follow the steps:
+*
+*		1. Create the directory for kafka's server log files and another for zookeper;
+*		2. Open the server.properties file inside the config folder;
+*			2.1. Look for the line 'log.dirs=/tmp/kafka-logs';
+*			2.2. Change it to the path of the folder for kafka's log files you created in step 1;
+*		3. Open zookeper.properties file inside the config folder;
+*			3.1. Look for the line 'dataDir=/tmp/zookeeper';
+*			3.2. Change it to the path of the folder for you created in step 1;
+*
+*		OBS: remember to use the /Kafka/my_data/kafka style of directory, where C:\Kafka\... is write only as /Kafka/...
+*		
+*
+*/
+    
+ 
+ 
