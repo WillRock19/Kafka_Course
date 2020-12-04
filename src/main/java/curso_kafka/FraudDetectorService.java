@@ -3,6 +3,7 @@ package curso_kafka;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
+import java.util.UUID;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -30,10 +31,22 @@ import org.apache.kafka.common.serialization.StringDeserializer;
  * both. 
  * 
  * But, if we execute it, we will see only ONE of the services will receive the messages.  Why? Kafka will use a algorithm 
- * to know where to send the value, and that algorithm uses the key whe are sendind in NewOrderMain's ProduceRecord's constructor.
+ * to know where to send the value, and that algorithm uses the key we are sending in NewOrderMain's ProduceRecord's constructor.
  * 
  * Since, right now, we are using the same key for all messages, It will always send the message to the same instance of a 
  * service (GOD DAMN IT, MARSHAL!!!)
+ * 
+ * When we want to see how the consume groups are consuming the messages, we can use the following:
+ * 
+ *  					.\kafka-consumer-groups.bat --all-groups --bootstrap-server localhost:9092 --describe 
+ *
+ * RESULT EXAMPLE:
+ * 
+ * GROUP           TOPIC                PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  	  LAG             							CONSUMER-ID                                                HOST            CLIENT-ID
+LogService      ECOMMERCE_SEND_EMAIL 		0          56              56              0               consumer-LogService-1-418cf77d-7b2f-420e-b1b0-5f2971d57482 						/192.168.0.4    consumer-LogService-1
+LogService      ECOMMERCE_NEW_ORDER  		0          32              32              0               consumer-LogService-1-418cf77d-7b2f-420e-b1b0-5f2971d57482 						/192.168.0.4    consumer-LogService-1
+LogService      ECOMMERCE_NEW_ORDER  		1          13              13              0               consumer-LogService-1-418cf77d-7b2f-420e-b1b0-5f2971d57482 						/192.168.0.4    consumer-LogService-1
+LogService      ECOMMERCE_NEW_ORDER  		2          18              18              0               consumer-LogService-1-418cf77d-7b2f-420e-b1b0-5f2971d57482 						/192.168.0.4    consumer-LogService-1
  * 
  * */
 
@@ -80,7 +93,12 @@ public class FraudDetectorService {
 		properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		
-		properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, FraudDetectorService.class.getSimpleName());
+		/*
+		 * We could also give a specific name to the instance, since we will execute many in paralel, to organize ourselves 
+		 * when we try to look for the state of the consumers. Let's give a random UniversalId to the name of the instance.
+		 * 
+		 * */
+		properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, FraudDetectorService.class.getSimpleName() + "-" + UUID.randomUUID().toString());
 				
 		return properties;
 	}
