@@ -1,5 +1,7 @@
 package curso_kafka;
 
+import java.util.HashMap;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import curso_kafka.models.Order;
@@ -13,7 +15,8 @@ public class FraudDetectorService {
 				FraudDetectorService.class.getTypeName(), 
 				"ECOMMERCE_NEW_ORDER",  
 				fraudService::parseRecord,
-				Order.class)) //FraudService's type to deserialize will be an object of type Order
+				Order.class,
+				new HashMap<>())) /*We will pass an empty map of properties, since we don't want to add nothing more (we could use, for java, a Map.of() either)*/
 		{
 			service.run();
 		}	

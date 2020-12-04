@@ -1,5 +1,8 @@
 package curso_kafka;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 public class EmailService {
@@ -11,7 +14,8 @@ public class EmailService {
 				EmailService.class.getSimpleName(), 
 				"ECOMMERCE_SEND_EMAIL", 
 				emailService::parseRecord,
-				String.class)) //Email's type to deserialize will be a string
+				String.class,
+				Map.of())) /*We will pass an empty map of properties, since we don't want to add nothing more (we could use, for java, a new HashMap<>() either)*/
 		{
 			service.run();
 		}

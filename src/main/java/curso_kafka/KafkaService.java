@@ -3,6 +3,7 @@ package curso_kafka;
 import java.io.Closeable;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -18,21 +19,21 @@ class KafkaService<T> implements Closeable
 	private final KafkaConsumer<String, T> consumer;
 	private final IConsumerFunction consumerFunction;
 
-	KafkaService(String groupId, String topic, IConsumerFunction consumerFunction, Class<T> type) 
+	KafkaService(String groupId, String topic, IConsumerFunction consumerFunction, Class<T> type, Map<String, String> extraPropertiesToUse) 
 	{
-		this(groupId, consumerFunction, type);	
+		this(groupId, consumerFunction, type, extraPropertiesToUse);	
 		consumer.subscribe(Collections.singletonList(topic));
 	}
 
-	KafkaService(String groupId, Pattern topic, IConsumerFunction consumerFunction, Class<T> type) {
-		this(groupId, consumerFunction, type);
+	KafkaService(String groupId, Pattern topic, IConsumerFunction consumerFunction, Class<T> type, Map<String, String> extraPropertiesToUse) {
+		this(groupId, consumerFunction, type, extraPropertiesToUse);
 		consumer.subscribe(topic);
 	}
 
-	private KafkaService(String groupId, IConsumerFunction consumerFunction, Class<T> type) 
+	private KafkaService(String groupId, IConsumerFunction consumerFunction, Class<T> type, Map<String, String> extraPropertiesToUse) 
 	{
 		this.consumerFunction = consumerFunction;
-		this.consumer = new KafkaConsumer<String, T>(produceProperties(groupId, type));
+		this.consumer = new KafkaConsumer<String, T>(produceProperties(groupId, type, extraPropertiesToUse));
 	}
 
 	void run() 
@@ -58,7 +59,7 @@ class KafkaService<T> implements Closeable
 		this.consumer.close();
 	}
 	
-	private Properties produceProperties(String groupID, Class<T> type) 
+	private Properties produceProperties(String groupID, Class<T> type, Map<String, String> extraPropertiesToUse) 
 	{
 		var properties = new Properties();
 		
@@ -82,6 +83,9 @@ class KafkaService<T> implements Closeable
 		/* I'm changing the comment that was here before, because now we are getting the type of the data 
 		 * from the consumers that instantiate this KafkaService */
 		properties.setProperty(GsonDeserializer.TYPE_CONFIG, type.getName());
+
+		/*Adding extra properties, that our consumers may want to be passed on creating of the Kafka consumer's class */
+		properties.putAll(extraPropertiesToUse);
 		
 		return properties;
 	}
