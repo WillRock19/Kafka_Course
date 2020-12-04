@@ -107,9 +107,15 @@ public class FraudDetectorService {
 		properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		
-		/* We could also give a specific name to the instance, since we will execute many in paralel, to organize ourselves 
-		 * when we try to look for the state of the consumers. Let's give a random UniversalId to the name of the instance.*/
-		properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, FraudDetectorService.class.getSimpleName() + "-" + UUID.randomUUID().toString());
+		/*Actually, I've made a mistake in one of my tests. The NAME I can change is in property CLIENT_ID_CONFIG, NOT 
+		* GROUP_ID_CONFIG. If I change THIS property, as I did before, we will create OTHER groups and not use the same 
+		* group in different partitions (I know, I know, a rookie's mistake) */
+		properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, FraudDetectorService.class.getSimpleName());
+		
+		/* NOW WE ARE GIVING A DIFFERENT NAME. So, the explain of why is bellow.
+		 * 	We could also give a specific name to the instance, since we will execute many in paralel, to organize ourselves 
+		 * 	when we try to look for the state of the consumers. Let's give a random UniversalId to the name of the instance.*/
+		properties.setProperty(ConsumerConfig.CLIENT_ID_CONFIG, FraudDetectorService.class.getSimpleName() + "-" + UUID.randomUUID().toString());
 		
 		/* With this configuration, the max of messages we are going to consume BEFORE executing the callback function
 		 * will change. As default, we wait until ALL messages be consumed, but then it might take a while before it
