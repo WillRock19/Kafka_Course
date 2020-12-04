@@ -10,7 +10,11 @@ public class LogService
 	{
 		var logService = new LogService();
 		
-		try(var service = new KafkaService(EmailService.class.getSimpleName(), Pattern.compile("ECOMMERCE.*"), logService::parseRecord))
+		try(var service = new KafkaService(
+				EmailService.class.getSimpleName(), 
+				Pattern.compile("ECOMMERCE.*"), 
+				logService::parseRecord,
+				String.class)) //Log's type to deserialize will be a string
 		{
 			service.run();
 		}	

@@ -18,21 +18,21 @@ class KafkaService<T> implements Closeable
 	private final KafkaConsumer<String, T> consumer;
 	private final IConsumerFunction consumerFunction;
 
-	KafkaService(String groupId, String topic, IConsumerFunction consumerFunction) 
+	KafkaService(String groupId, String topic, IConsumerFunction consumerFunction, Class<T> type) 
 	{
-		this(groupId, consumerFunction);	
+		this(groupId, consumerFunction, type);	
 		consumer.subscribe(Collections.singletonList(topic));
 	}
 
-	KafkaService(String groupId, Pattern topic, IConsumerFunction consumerFunction) {
-		this(groupId, consumerFunction);
+	KafkaService(String groupId, Pattern topic, IConsumerFunction consumerFunction, Class<T> type) {
+		this(groupId, consumerFunction, type);
 		consumer.subscribe(topic);
 	}
 
-	private KafkaService(String groupId, IConsumerFunction consumerFunction) 
+	private KafkaService(String groupId, IConsumerFunction consumerFunction, Class<T> type) 
 	{
 		this.consumerFunction = consumerFunction;
-		this.consumer = new KafkaConsumer<String, T>(produceProperties(groupId));
+		this.consumer = new KafkaConsumer<String, T>(produceProperties(groupId, type));
 	}
 
 	void run() 
@@ -58,11 +58,11 @@ class KafkaService<T> implements Closeable
 		this.consumer.close();
 	}
 	
-	private Properties produceProperties(String groupID) {
+	private Properties produceProperties(String groupID, Class<T> type) 
+	{
 		var properties = new Properties();
 		
-		properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
-		
+		properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");	
 		properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		
 		/* The use of GsonSerializer will throw an exception when we try to execute a message that is just a string,
@@ -79,10 +79,9 @@ class KafkaService<T> implements Closeable
 		properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupID);
 		properties.setProperty(ConsumerConfig.CLIENT_ID_CONFIG, UUID.randomUUID().toString());	
 		
-		
-		/* Property we are creating to tell to deserializer which class name it is going to deserialize our data in.
-		 * Ass you can see, by default we are deserializing as a string. */
-		properties.setProperty(GsonDeserializer.TYPE_CONFIG, String.class.getName());
+		/* I'm changing the comment that was here before, because now we are getting the type of the data 
+		 * from the consumers that instantiate this KafkaService */
+		properties.setProperty(GsonDeserializer.TYPE_CONFIG, type.getName());
 		
 		return properties;
 	}
