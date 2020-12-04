@@ -11,6 +11,8 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 
+import curso_kafka.services.GsonSerializer;
+
 class KafkaDispatcher<T> implements Closeable
 {
 	private final KafkaProducer<String, T> producer;
@@ -35,8 +37,13 @@ class KafkaDispatcher<T> implements Closeable
 		var properties = new Properties();
 		
 		properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
-		properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-		properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+		
+		/* Now that we are using a generic type, we can't keep using the stringSerializer, since it only serialize 
+		 * strings. We can use another formats, though. Let's try to use a JSON serializer, saw we? Let's use, for
+		 * that, a library called GSON.
+		*/
+		properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, GsonSerializer.class.getName());
+		properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GsonSerializer.class.getName());
 						
 		return properties;
 	}
