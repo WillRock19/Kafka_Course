@@ -14,7 +14,7 @@ public class LogService
 				EmailService.class.getSimpleName(), 
 				Pattern.compile("ECOMMERCE.*"), 
 				logService::parseRecord,
-				String.class)) //Log's type to deserialize will be a string
+				String.class)) //Log's type to deserialize will be a string (this will throw an error)
 		{
 			service.run();
 		}	
