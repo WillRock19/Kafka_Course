@@ -1,5 +1,7 @@
 package curso_kafka;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
@@ -9,7 +11,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
-class KafkaService 
+class KafkaService implements Closeable
 {
 	private final KafkaConsumer<String, String> consumer;
 	private final IConsumerFunction consumerFunction;
@@ -40,6 +42,11 @@ class KafkaService
 		}	
 	}
 	
+	@Override
+	public void close() {
+		this.consumer.close();
+	}
+	
 	private Properties produceProperties(String groupID) {
 		var properties = new Properties();
 		
@@ -55,5 +62,4 @@ class KafkaService
 				
 		return properties;
 	}
-
 }
