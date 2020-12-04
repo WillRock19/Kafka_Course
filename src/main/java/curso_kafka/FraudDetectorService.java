@@ -37,6 +37,12 @@ import org.apache.kafka.common.serialization.StringDeserializer;
  * Since, right now, we are using the same key for all messages, It will always send the message to the same instance of a 
  * service (GOD DAMN IT, MARSHAL!!!)
  * 
+ * As our professor taught us:
+ * 
+ * 					"A chave é usada para distribuir a mensagem entre as 
+ * 					 partições existentes e consequentemente entre as instâncias 
+ * 				     de um serviço dentro de um consumer group."
+ * 
  * When we want to see how the consume groups are consuming the messages, we can use the following:
  * 
  *  					.\kafka-consumer-groups.bat --all-groups --bootstrap-server localhost:9092 --describe 
