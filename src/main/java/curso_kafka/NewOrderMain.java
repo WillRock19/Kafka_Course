@@ -15,14 +15,11 @@ public class NewOrderMain {
 	public static void main(String[] args) throws InterruptedException, ExecutionException {
 		var producer = new KafkaProducer<String, String>(producerProperties());
 		
-		//Executing this code 100 times so we can see how Kafka will distribute the messages
 		for(var i = 0; i < 100; i++) {
-			//Let's create a key that will change for every user (pretend it is a user's id);
 			var key = UUID.randomUUID().toString();
 			var value = key + ",666,1999";
 			var email = "welcome! We are processing your order :)";
 			
-			//Using the key so the KAfka's algorithm will rebalance the messages between multiple partitions
 			var record = new ProducerRecord<String, String>("ECOMMERCE_NEW_ORDER", key, value);
 			var emailRecord = new ProducerRecord<String, String>("ECOMMERCE_SEND_EMAIL", key, email);
 			
