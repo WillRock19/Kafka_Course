@@ -11,9 +11,11 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
-class KafkaService implements Closeable
+import curso_kafka.services.GsonDeserializer;
+
+class KafkaService<T> implements Closeable
 {
-	private final KafkaConsumer<String, String> consumer;
+	private final KafkaConsumer<String, T> consumer;
 	private final IConsumerFunction consumerFunction;
 
 	KafkaService(String groupId, String topic, IConsumerFunction consumerFunction) 
@@ -30,7 +32,7 @@ class KafkaService implements Closeable
 	private KafkaService(String groupId, IConsumerFunction consumerFunction) 
 	{
 		this.consumerFunction = consumerFunction;
-		this.consumer = new KafkaConsumer<String, String>(produceProperties(groupId));
+		this.consumer = new KafkaConsumer<String, T>(produceProperties(groupId));
 	}
 
 	void run() 
@@ -61,14 +63,17 @@ class KafkaService implements Closeable
 		
 		properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
 		
-		properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-		properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+		properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, GsonDeserializer.class.getName());
+		properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, GsonDeserializer.class.getName());
 		
-
 		properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupID);
 		properties.setProperty(ConsumerConfig.CLIENT_ID_CONFIG, UUID.randomUUID().toString());	
-		//properties.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
-				
+		
+		
+		/* Property we are creating to tell to deserializer which class name it is going to deserialize our data in.
+		 * Ass you can see, by default we are deserializing as a string. */
+		properties.setProperty(GsonDeserializer.TYPE_CONFIG, String.class.getName());
+		
 		return properties;
 	}
 }
