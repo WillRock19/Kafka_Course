@@ -9,7 +9,8 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
-/*
+/*														CLASS 02_Explanations
+ * 
  * In this class, we are gonna run this service twice, so it can run in paralel to deal with messages. First of all,
  * since we already created a ECOMMERCE_NEW_ORDER consumer, if we run the command below we will see that this consumer
  * has only one partition.
@@ -48,7 +49,20 @@ LogService      ECOMMERCE_NEW_ORDER  		0          32              32            
 LogService      ECOMMERCE_NEW_ORDER  		1          13              13              0               consumer-LogService-1-418cf77d-7b2f-420e-b1b0-5f2971d57482 						/192.168.0.4    consumer-LogService-1
 LogService      ECOMMERCE_NEW_ORDER  		2          18              18              0               consumer-LogService-1-418cf77d-7b2f-420e-b1b0-5f2971d57482 						/192.168.0.4    consumer-LogService-1
  * 
- * */
+ * The results of this table will be gathered after kafka commit's each changes. but, by default, that will happen only after MANY messages are consumed
+ * We can change it adding a property MAX_POLL_RECORDS_CONFIG
+ * 
+ * 				GROUP                                                TOPIC               PARTITION 		 CURRENT-OFFSET  	 LOG-END-OFFSET  		LAG             CONSUMER-ID		 																									HOST            CLIENT-ID
+	FraudDetectorService-13a3e53d-d04d-4115-9c47-5a5a8f478dc3 ECOMMERCE_NEW_ORDER 			0          			41              	68              27              consumer-FraudDetectorService-13a3e53d-d04d-4115-9c47-5a5a8f478dc3-1-ef8168ba-dcce-4689-b68c-31aa32c51f6b 		/192.168.0.4    consumer-FraudDetectorService-13a3e53d-d04d-4115-9c47-5a5a8f478dc3-1
+	FraudDetectorService-13a3e53d-d04d-4115-9c47-5a5a8f478dc3 ECOMMERCE_NEW_ORDER 			1         			47              	47              0               consumer-FraudDetectorService-13a3e53d-d04d-4115-9c47-5a5a8f478dc3-1-ef8168ba-dcce-4689-b68c-31aa32c51f6b 		/192.168.0.4    consumer-FraudDetectorService-13a3e53d-d04d-4115-9c47-5a5a8f478dc3-1
+	FraudDetectorService-13a3e53d-d04d-4115-9c47-5a5a8f478dc3 ECOMMERCE_NEW_ORDER 			2         			22              	48              26              consumer-FraudDetectorService-13a3e53d-d04d-4115-9c47-5a5a8f478dc3-1-ef8168ba-dcce-4689-b68c-31aa32c51f6b 		/192.168.0.4    consumer-FraudDetectorService-13a3e53d-d04d-4115-9c47-5a5a8f478dc3-1
+
+				GROUP                                                TOPIC               PARTITION  		CURRENT-OFFSET   LOG-END-OFFSET  		LAG             CONSUMER-ID   																										HOST            CLIENT-ID
+	FraudDetectorService-239f22a1-ac93-48e2-b225-85cb34639d1e ECOMMERCE_NEW_ORDER 			0          			33              	68              35              consumer-FraudDetectorService-239f22a1-ac93-48e2-b225-85cb34639d1e-1-8931d409-9005-4bb6-812a-1188d4a845f4 		/192.168.0.4    consumer-FraudDetectorService-239f22a1-ac93-48e2-b225-85cb34639d1e-1
+	FraudDetectorService-239f22a1-ac93-48e2-b225-85cb34639d1e ECOMMERCE_NEW_ORDER 			1          			29              	47              18              consumer-FraudDetectorService-239f22a1-ac93-48e2-b225-85cb34639d1e-1-8931d409-9005-4bb6-812a-1188d4a845f4 		/192.168.0.4    consumer-FraudDetectorService-239f22a1-ac93-48e2-b225-85cb34639d1e-1
+	FraudDetectorService-239f22a1-ac93-48e2-b225-85cb34639d1e ECOMMERCE_NEW_ORDER 			2          			48              	48               0               consumer-FraudDetectorService-239f22a1-ac93-48e2-b225-85cb34639d1e-1-8931d409-9005-4bb6-812a-1188d4a845f4 		/192.168.0.4    consumer-FraudDetectorService-239f22a1-ac93-48e2-b225-85cb34639d1e-1
+ * 
+ * Kafka's will rebalance by its own, following it's own properties */
 
 public class FraudDetectorService {
 
@@ -93,13 +107,15 @@ public class FraudDetectorService {
 		properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 		
-		/*
-		 * We could also give a specific name to the instance, since we will execute many in paralel, to organize ourselves 
-		 * when we try to look for the state of the consumers. Let's give a random UniversalId to the name of the instance.
-		 * 
-		 * */
+		/* We could also give a specific name to the instance, since we will execute many in paralel, to organize ourselves 
+		 * when we try to look for the state of the consumers. Let's give a random UniversalId to the name of the instance.*/
 		properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, FraudDetectorService.class.getSimpleName() + "-" + UUID.randomUUID().toString());
-				
+		
+		/* With this configuration, the max of messages we are going to consume BEFORE executing the callback function
+		 * will change. As default, we wait until ALL messages be consumed, but then it might take a while before it
+		 * gives me a feedback */
+		properties.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
+		
 		return properties;
 	}
 
