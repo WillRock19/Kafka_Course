@@ -1,4 +1,4 @@
-/*														CLASS 02_Explanations
+/*												CLASS 02_Parallelizing tasks in a service
  * 
  * In this class, we are gonna run this service twice, so it can run in paralel to deal with messages. First of all,
  * since we already created a ECOMMERCE_NEW_ORDER consumer, if we run the command below we will see that this consumer
@@ -61,7 +61,7 @@
  *
  *
  *
-*														CLASS 03_Refactoring Project
+*												CLASS 03_Creating our layer (Refactoring Project)
 * 
 *
 *	OBS: See Commits referent to Class 03 to see what was done here
@@ -142,3 +142,12 @@
 *  	
 *  		To see this and more, look for the comments in the commit before this (ENGING CLASS 04).
 * 
+* 
+*													  CLASS 05_Microsservices and modules
+* 
+*
+*	Basically, in this class we refactored our project into submodules. TO see the changes, look for the commits
+*
+*	OBS: I personally remove the use of Email model's class, because there is no use to the configuration we did in 
+*		 chapter 04 to the Log class, allowing it to pass different properties to deserialize the message as a string,
+*		 not an JSON, if we are still passing an Email object (in other words, a JSON) to it. So, I remove it. Process me.
