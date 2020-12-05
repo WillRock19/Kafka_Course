@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
-import curso_kafka.models.Email;
 import curso_kafka.models.Order;
 
 public class NewOrderMain {
@@ -14,7 +13,7 @@ public class NewOrderMain {
 	{
 		try(var orderDispatcher = new KafkaDispatcher<Order>())
 		{
-			try(var emailDispatcher = new KafkaDispatcher<Email>())
+			try(var emailDispatcher = new KafkaDispatcher<String>())
 			{
 				for(var i = 0; i < 10; i++) 
 				{
@@ -24,7 +23,7 @@ public class NewOrderMain {
 					var amount = new BigDecimal(Math.random() * 5000 + 1);
 					
 					var order = new Order(userId, orderId, amount);
-					var email = new Email("Welcome", "Be welcome! We are processing your order :)");
+					var email = "Be welcome! We are processing your order :)";
 
 					orderDispatcher.send("ECOMMERCE_NEW_ORDER", key, order);
 					emailDispatcher.send("ECOMMERCE_SEND_EMAIL", key, email);

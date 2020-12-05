@@ -8,12 +8,6 @@
   <artifactId>service-fraud-detector</artifactId>
   <dependencies>
   	<dependency>
-  		<groupId>curso_kafka</groupId>
-	  	<artifactId>curso_kafka</artifactId>
-	  	<version>0.0.1-SNAPSHOT</version>
-	  	<scope>compile</scope>
-  	</dependency>
-  	<dependency>
   	    <groupId>curso_kafka</groupId>
   		<artifactId>common-kafka</artifactId>
 	    <version>0.0.1-SNAPSHOT</version>
