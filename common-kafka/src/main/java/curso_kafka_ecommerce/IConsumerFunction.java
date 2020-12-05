@@ -1,4 +1,4 @@
-package curso_kafka;
+package curso_kafka_ecommerce;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 

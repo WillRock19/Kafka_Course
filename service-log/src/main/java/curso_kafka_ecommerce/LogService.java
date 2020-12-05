@@ -1,4 +1,4 @@
-package curso_kafka;
+package curso_kafka_ecommerce;
 
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -14,7 +14,7 @@ public class LogService
 		var logService = new LogService();
 		
 		try(var service = new KafkaService(
-				EmailService.class.getSimpleName(), 
+				LogService.class.getSimpleName(), 
 				Pattern.compile("ECOMMERCE.*"), 
 				logService::parseRecord,
 				String.class,

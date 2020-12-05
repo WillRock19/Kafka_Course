@@ -1,9 +1,11 @@
-package curso_kafka;
+package curso_kafka_ecommerce;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+
+import curso_kafka_ecommerce.KafkaService;
 
 public class EmailService {
 

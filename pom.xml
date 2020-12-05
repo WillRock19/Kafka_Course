@@ -3,6 +3,7 @@
   <groupId>curso_kafka</groupId>
   <artifactId>curso_kafka</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
   <dependencies>
   	<dependency>
   		<groupId>org.apache.kafka</groupId>
@@ -46,4 +47,11 @@
 	    <version>2.8.6</version>
 	</dependency>	
   </dependencies>
+  <modules>
+  	<module>service-email</module>
+  	<module>service-log</module>
+  	<module>service-fraud-detector</module>
+  	<module>service-new-order</module>
+  	<module>common-kafka</module>
+  </modules>
 </project>
