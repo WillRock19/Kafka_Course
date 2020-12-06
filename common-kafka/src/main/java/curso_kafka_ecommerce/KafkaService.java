@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -48,7 +49,13 @@ class KafkaService<T> implements Closeable
 				
 				for(var record : records) 
 				{
-					consumerFunction.consume(record);
+					try {
+						consumerFunction.consume(record);
+					} 
+					catch (InterruptedException | ExecutionException e) {
+						//We'll threat the consume exception as a log for now
+						e.printStackTrace();
+					}
 				}
 			}
 		}	

@@ -1,0 +1,31 @@
+*
+* 											CLASS 01_New Producers and consumers
+* 
+* 
+* 
+* 		01. About changes in the service-fraud-detector
+* 
+* 			Let's start change the service and add a logic to understand if a value of a order is or not a fraud.
+*  			Then, we are going to send messages from our service, cause we are baaaaaaad boys.
+* 
+* 			-> IMPORTANT: If we do execute the LogService BEFORE our the FraudService, who send messages to a new Topic, 
+*			the LogService won't hear those messages. Why? Because when we use a pattern to hear the messages, the 
+*			pattern will be applied ONLY when the service starts, but not later. In other words: since when it starts
+*			we still doesn't have the FraudService with it's new topics running, it will not know those topics exists,
+*			and, for that alone, it will not hear it.
+*
+*		02. About changes in Order of service-fraud-detector
+*
+*			Since we have a specific Order for each service, we make changes that only make sense inside that project. That
+*			generates a trade-in-trade-off scenario: for a first, we don't have to add changes that does not make sense in
+*			other scenarios. The problem is: we will have different models for each service. Do our project accepts that scenario?
+*			Yes, so it's all sunny in Philly.
+* 
+* 		03. About the changes in KafkaService
+*  
+* 			Since we are now throwing exceptions in our consume methods (because we are going to send messages inside of the
+* 			consume method from FraudService), we need to threat those exceptions. For now, we only will log in those exceptions.
+* 
+* 
+* 
+* 

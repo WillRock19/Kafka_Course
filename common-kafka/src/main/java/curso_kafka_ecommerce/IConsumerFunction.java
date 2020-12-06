@@ -1,7 +1,9 @@
 package curso_kafka_ecommerce;
 
+import java.util.concurrent.ExecutionException;
+
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 public interface IConsumerFunction<T> {
-	void consume(ConsumerRecord<String, T> record);
+	void consume(ConsumerRecord<String, T> record)  throws InterruptedException, ExecutionException ;
 }
