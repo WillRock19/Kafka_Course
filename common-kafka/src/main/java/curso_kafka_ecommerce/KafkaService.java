@@ -52,7 +52,7 @@ class KafkaService<T> implements Closeable
 					try {
 						consumerFunction.consume(record);
 					} 
-					catch (InterruptedException | ExecutionException e) {
+					catch (Exception e) {
 						//We'll threat the consume exception as a log for now
 						e.printStackTrace();
 					}

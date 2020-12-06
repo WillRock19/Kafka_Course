@@ -28,16 +28,17 @@
 * 
 * 		04. About the new service CreateUserService
 * 
-* 			Our implementation will assume the service will run ONLY ONCE.
+* 			Our implementation will assume the service will run ONLY ONCE. This service will save the user information in a 
+* 			SQLite database.
 * 
+* 			As we go further in the implementation of this service, one architectural decision is becoming clear: our user, when 
+*			added, will not use the UniversalId as primary key, but the e-mail. When the person give their information, their
+* 			identification will be the email, so this must be the key we will use to communicate between our services.
 * 
-* 
-* 
-* 
-* 
-* 
-* 
-* 
+* 			So, what does this mean? Since the Universal Id will exists only after the user is registered in my database, the
+* 			key we must have in all the Order models is the email, and, as the project is when I'm writing this, the Order does
+* 			not contain any email. With this in mind, we close this class ang going to start the next one making this architectural
+* 			change.
 * 
 * 
 * 

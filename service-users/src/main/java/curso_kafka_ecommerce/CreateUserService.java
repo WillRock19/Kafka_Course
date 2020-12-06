@@ -44,7 +44,7 @@ public class CreateUserService {
 				"email varchar(200))");		
 	}
 
-	private void parseRecord(ConsumerRecord<String, Order> record) throws InterruptedException, ExecutionException 
+	private void parseRecord(ConsumerRecord<String, Order> record) throws InterruptedException, ExecutionException, SQLException 
 	{
 		var order = record.value();
 		
@@ -52,6 +52,29 @@ public class CreateUserService {
 		System.out.println("Processing new order. Checking for frauds...");
 		System.out.println("-> " + order);	
 		
-		//if(isNewEmail(order.getEmail())) {	}
+		if(isNewUser(order.getEmail())) 
+		{	
+			insertNewUser(order.getEmail());
+			System.out.println("Usuário adicionado com sucesso :)");
+		}
+	}
+
+	private void insertNewUser(String email) throws SQLException {
+		var insertStatement = connection.prepareStatement("insert into Users (uuid, email) values (?,?)");
+		
+		insertStatement.setString(1, "uuid");
+		insertStatement.setString(2, email);
+		
+		insertStatement.execute();
+	}
+
+	private boolean isNewUser(String email) throws SQLException {
+		var exists = connection.prepareStatement("select uuid from Users where email = ? limit 1");
+		exists.setString(1, email);
+		
+		var results = exists.executeQuery();
+		
+		/* If next() return a new line, the register exists. If it doesn't, it means it's a new one.*/
+		return !results.next();
 	}
 }
