@@ -37,11 +37,11 @@
 * 
 * 			So, what does this mean? Since the Universal Id will exists only after the user is registered in my database, the
 * 			key we must have in all the Order models is the email, and, as the project is when I'm writing this, the Order does
-* 			not contain any email. With this in mind, we close this class ang going to start the next one making this architectural
+* 			not contain any email. With this in mind, we close this class and going to start the next one making this architectural
 * 			change.
 * 
 * 
-* 
+*  												CLASS 02_Envolving a service
 * 
 * 
 * 
