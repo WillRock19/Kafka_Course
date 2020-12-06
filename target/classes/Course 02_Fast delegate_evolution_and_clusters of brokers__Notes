@@ -26,6 +26,27 @@
 * 			Since we are now throwing exceptions in our consume methods (because we are going to send messages inside of the
 * 			consume method from FraudService), we need to threat those exceptions. For now, we only will log in those exceptions.
 * 
+* 		04. About the new service CreateUserService
 * 
+* 			Our implementation will assume the service will run ONLY ONCE.
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* 
+* * 
+* 
+* 
+* * 
 * 
 * 
