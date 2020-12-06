@@ -43,9 +43,9 @@
 * 
 *  												CLASS 02_Envolving a service
 * 
-* 
-* 
-*  
+*  In this class, we discussed about evolving a service. We started to evolve to use email in Orders, and adding it to the
+*  schemas of services that needed to know a order has an email (unfortunately, it was all the services). Besides that, we've
+*  changed more bout the services and made them all work with our new model. To see more, look for the commits about this class.
 * 
 * 
 * * 
