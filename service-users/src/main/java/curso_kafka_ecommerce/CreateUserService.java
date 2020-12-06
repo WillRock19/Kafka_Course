@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -33,10 +34,16 @@ public class CreateUserService {
 		}	
 	}
 	
-	private void initializeDatabaseConnection() {
+	private void initializeDatabaseConnection() throws SQLException {
+		var connectionString = "jdbc:sqlite:target/users_database.db";
+		connection = DriverManager.getConnection(connectionString);
+	}
+	
+	private void createUsersTable() {
 		try {
-			var connectionString = "jdbc:sqlite:target/users_database.db";
-			connection = DriverManager.getConnection(connectionString);
+		connection.createStatement().execute("create table Users(" +
+				"uuid varchar(200) primary key," + 
+				"email varchar(200))");	
 		}
 		catch(SQLException ex) {
 			/* This will be to deal with the exception when the database ALREADY EXISTS (but 
@@ -45,12 +52,6 @@ public class CreateUserService {
 			 */
 			ex.printStackTrace();
 		}
-	}
-	
-	private void createUsersTable() throws SQLException {
-		connection.createStatement().execute("create table Users(" +
-				"uuid varchar(200) primary key," + 
-				"email varchar(200))");		
 	}
 
 	private void parseRecord(ConsumerRecord<String, Order> record) throws InterruptedException, ExecutionException, SQLException 
@@ -63,15 +64,15 @@ public class CreateUserService {
 		
 		if(isNewUser(order.getEmail())) 
 		{	
-			insertNewUser(order.getUserId(), order.getEmail());
+			insertNewUser(order.getEmail());
 			System.out.println("Usuário " + order.getEmail() + " adicionado com sucesso :)");
 		}
 	}
 
-	private void insertNewUser(String uuid, String email) throws SQLException {
+	private void insertNewUser(String email) throws SQLException {
 		var insertStatement = connection.prepareStatement("insert into Users (uuid, email) values (?,?)");
 		
-		insertStatement.setString(1, uuid);
+		insertStatement.setString(1, UUID.randomUUID().toString());
 		insertStatement.setString(2, email);
 		
 		insertStatement.execute();
