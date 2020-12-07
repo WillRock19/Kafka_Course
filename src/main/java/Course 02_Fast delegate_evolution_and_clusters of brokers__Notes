@@ -53,3 +53,24 @@
 *  Let's create a service, service-http-ecommerce, that will represent a webpage from where the user will send the first message
 *  with it's data to the system. To do that, we'll use the HttpServlet library, and create a service which will start a server 
 *  and create a message to send to our queue.
+*  
+*  FAST DELEGATE
+*  
+*  	Note that our newOrderServlet has little to no code before sending the message to Kafka. That happens because we are trying 
+*  	to achieve a "fast delegate approach": we want to send the messages to the queue as fast as we can, so, if any error happens,
+*  	we have our logs to show us where it did, and, even better, we only need to resend the message (if we did a lot of process
+*  	before send it, and something went wrong, we'd have to redo all that process, besides send the message again. Not that, with
+*  	approach, our work on errors will be reduced).
+*  
+*   With that in mind, our entry point will usually has little functionality in it, just to send the messages as soon as possible
+*  	to not allow the risk that something goes wrong inside of it and we have to redo a process that the user already finished it.
+*  
+*  
+*  
+*  
+*  
+*  
+*  
+*  
+*  
+*  
