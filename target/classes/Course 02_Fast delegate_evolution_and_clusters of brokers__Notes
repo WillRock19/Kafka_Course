@@ -231,13 +231,22 @@
 *
 *  IV. ACKS AND RELIABILITY
 *
-*	
+*	What happens if we send a message, the message finds the Leader, but the Replicas are off? That's enough? Imagine we have the machines A, B, C, D. The first
+*	three are off, and my message reach D, is not replicated and, before the other three can rise up again, D falls off too. Then, A, B and C gets up. What will
+*	happen? One of the three will assume the Leader role, but the three will have the older information, and will not be updated with the message I've just sent, 
+*	because there wasn't time to D replicate that the message.
 *
+*	So, how to deal with this? Have in mind that the .get() method we call after the send() method will wait for a confirmation from the Leader that everything
+*	is OK. So, what we could do is make sure that get() will wait for a confirmation that the message sent to the Leader was delivery to each of the Replicas,
+*	and that every Replica confirms it. 
 *
+*			-> This is the most reliable option, but it's also the slower approach. 
 *
+*			-> We can do that configuring the properties we pass to KafkaProducer in our file KafkaDispatcher.The property should be as follows:
 *
+*											properties.setProperty(ProducerConfig.ACKS_CONFIG, info_that_represents_the_config);
 *
+*				-> You can look the source code of ProducerConfig to see all options that ACKS_CONFIG can receive.
 *
-*
-*
-*
+*			-> In our code, we will use the config "all", that means the Leader will await for the full confirmation that each Replica has the message before
+*			   return a confirmation to the get() message.
