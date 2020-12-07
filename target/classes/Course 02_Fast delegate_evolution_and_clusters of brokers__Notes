@@ -83,11 +83,76 @@
 *  					  stuck if we send a message with the broker down. Now, if the broker comes back, they will start working again and deliver
 * 	 				  it the messages that got stuck, without any work from my part.
 *  	
-*  To solve this problem, we MUST RUN MANY INSTANCES OF THE BROKER, as we do for the SERVICES :)
+*  	To solve this problem, we MUST RUN MANY INSTANCES OF THE BROKER, as we do for the SERVICES :)
+*  
+*  
+*  CLUSTER REPLICATION
+*  
+*  	We can reconfigure our broker while it's all running. Incredible, huh?
+*  	
+*  	To make that work, follow these steps:
+*  	
+*  		1. Copy the server.properties file to be used by the new broker;
+*  
+*  		2. Edit the new file to:
+*  			2.1. Change the broker.id property;
+*  			2.2. Change the log's directory to a new one, just for this broker;
+*  			2.3. Change the listener's port to a new empty one;
+*  
+*  		3. Start a new instance with the new server.properties
+*  	
+*  	If we only do that and try to kill the first broke to see if Kafka will use the second, it does not work and the
+*  	services will be waiting for the first one to come back.
+*  	
+*  	Why?
+*  	
+*  	Well, think about it: when we've created the consumer's partitions, they are all localized inside the first broker,
+*  	and we didn't configure anything to tell then tha, if that broker is down, they need to search for another. So, of
+*  	course, they don't.
+*  	
+*  	So, how do we deal with this?
+*  	
+*  	We need to change the ReplicationFactor of our topics. To do that, we can try to use the following command:
+*  	
+*  		kafka-topics.bat --zookeper localhost:2181 --alter --topic ECOMMERCE_NEW_ORDER --partitions 3 --replication-factor 2
+*  	
+*  	But that will caught us an error. The replication factor CANNOT, and I quote, "CANNOT BE CHANGED AFTER THE TOPIC'S CREATION".
+*  	
+*  	So, what now? 
+*  	
+*  	Open the server.propertie's file from both brokers, and add the following line to then (in the example, they added it bellow the broker.id)
+*  	
+*  		default.replication.factor = 2;
+*  	
+*  	After that, stop the kafka and the zookeper, clean the log's directory folder aaaaand... lets give it a try!
+*  	
+*  		1. Restart Zookeper;
+*  		2. Start kafka's first broker;
+*  		3. Start kafka's second broker;
+*  		4. Confirm there are no topics yet (since you deleted the log's directory, there should not have any)
+*  		5. Run two instances of each service and let's get down to business;
+*  	
+*  	Open a new command line and use the command:
+*  
+*  						kafka-topics.bat --describe --bootstrap-server localhost:9092
+*  
+*  	It will show you all the topics created by your services, but, even better, the Leader property (that represents the broker 
+*  	where the topic is running) will have other values than 0 (the 0 represented the id of the broker, so you'll see the number
+*  	of the id you selected to the new broker here).
+*  
+*  	Now, when the Leader now falls Kafka will send the messages to any other Leaders available.
+*  
+*  	Note, thought, that there might be some topics where the "Leader" property is none for the topics "__consumer_offsets". Why? 
+*  	Because the offsets, the messages I've already read, where all stored inside the broker that has fallen (if it comes back 
+	again, then the process will resume from where it ended).
+*  
+*  		GOOD TO KNOW: The property ISR, that repeats bellow each of the topic's info when you run kafka-topics's command shows two
+*  					  how many replics of that topic are updated until that moment.
 *  
 *  
 *  
 *  
 *  
 *  
+
 				  
