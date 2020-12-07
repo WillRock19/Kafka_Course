@@ -44,7 +44,12 @@ class KafkaDispatcher<T> implements Closeable
 		*/
 		properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, GsonSerializer.class.getName());
 		properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GsonSerializer.class.getName());
-						
+		
+		/* Making sure every Replica will receive a update with the last message, from the Leader, before the broker
+		 * Leader return an acknowledge to our .get(). 
+		 */
+		properties.setProperty(ProducerConfig.ACKS_CONFIG, "all");
+		
 		return properties;
 	}
 	

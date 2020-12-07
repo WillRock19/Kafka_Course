@@ -248,5 +248,29 @@
 *
 *				-> You can look the source code of ProducerConfig to see all options that ACKS_CONFIG can receive.
 *
-*			-> In our code, we will use the config "all", that means the Leader will await for the full confirmation that each Replica has the message before
-*			   return a confirmation to the get() message.
+*				-> We have three types of acks:
+*
+*					1. "0", the producer will not wait for the Leader to respond;
+*					2. "1", that makes the leader send the ack after write the message received in it's log;
+*					3. "all", that we'll discuss bellow;
+*
+*			-> In our code, we will use the configuration "all", that means the Leader will await for the full confirmation from each of the Replicas that are 
+*			   in sync (in the column IRS) before return a confirmation to the get() message.
+*
+*				-> The thing is: if I have N replicas, the only way to guarantee all of then will be updated before return a to the get() is using "all";
+*
+*				-> But then again, testing manually we saw some different behavior: when we run our program with this configuration, then stop the kafka's server
+*				   from our replicas, the topics will be reorganized and Kafka will await for the ack from all the machines that still in sync... which will be 
+*				   only the one we kept running.
+*
+*				-> So, if we have only one machine on it's foot, the ACKS_CONFIG doesn't do nothing. It will only make sense in situations where, if our service
+*				   gets down, we try to raise them up in the next second... so there always will be more than one machine running in our cluster.
+*
+*
+*		SO, TO HAVE THE MOST RELIABILITY POSSIBLE, WE NEED:
+*
+*			1. Many servers (replicas) running at the same time;
+*			2. Many partitions running for a topic;
+*			3. ACKS_CONFIG as "all", so we will keep synchronizing all of the replicas;
+*
+*
