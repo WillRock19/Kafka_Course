@@ -68,7 +68,7 @@
 *  
 *  													CLASS 04_Broker's clusters
 *  
-*  SINGLE POINT OF FAILURE DO BROKER
+*  I. SINGLE POINT OF FAILURE DO BROKER
 *  
 *  	Now we have many services that we can let be running at same time. We can run any of these as many times as we want, and that's
 *  	awesome. And, REMEMBER: each one of the consumer groups will consume, in parallel, at most, the number of partitions 
@@ -86,7 +86,7 @@
 *  	To solve this problem, we MUST RUN MANY INSTANCES OF THE BROKER, as we do for the SERVICES :)
 *  
 *  
-*  CLUSTER REPLICATION
+*  II. CLUSTER REPLICATION
 *  
 *  	We can reconfigure our broker while it's all running. Incredible, huh?
 *  	
@@ -107,20 +107,44 @@
 *  	Why?
 *  	
 *  	Well, think about it: when we've created the consumer's partitions, they are all localized inside the first broker,
-*  	and we didn't configure anything to tell then tha, if that broker is down, they need to search for another. So, of
+*  	and we didn't configure anything to tell then that, if that broker is down, they need to search for another. So, of
 *  	course, they don't.
+*  
+*  	You can see this if you run the command:
 *  	
+*  						kafka-topics.bat --describe --bootstrap-server localhost:9092
+*  
+*  	It will show something like the following:
+*  
+* 		Topic: ECOMMERCE_ORDER_APPROVED PartitionCount: 1       ReplicationFactor: 1    Configs: segment.bytes=1073741824
+* 		        Topic: ECOMMERCE_ORDER_APPROVED Partition: 0    Leader: 0       Replicas: 0     Isr: 0
+*
+* 		Topic: ECOMMERCE_SEND_EMAIL     PartitionCount: 1       ReplicationFactor: 1    Configs: segment.bytes=1073741824
+* 		        Topic: ECOMMERCE_SEND_EMAIL     Partition: 0    Leader: 0       Replicas: 0     Isr: 0
+*
+* 		Topic: ECOMMERCE_ORDER_REJECTED PartitionCount: 1       ReplicationFactor: 1    Configs: segment.bytes=1073741824
+* 		        Topic: ECOMMERCE_ORDER_REJECTED Partition: 0    Leader: 0       Replicas: 0     Isr: 0
+*
+* 		Topic: ECOMMERCE_NEW_ORDER      PartitionCount: 1       ReplicationFactor: 1    Configs: segment.bytes=1073741824
+* 		        Topic: ECOMMERCE_NEW_ORDER      Partition: 0    Leader: 0       Replicas: 0     Isr: 0
+*
+* 		Topic: __consumer_offsets       PartitionCount: 50      ReplicationFactor: 1    Configs: compression.type=producer,cleanup.policy=compact,segment.bytes=104857600
+*         Topic: __consumer_offsets       Partition: 0    Leader: 0       Replicas: 0     Isr: 0
+*         Topic: __consumer_offsets       Partition: 1    Leader: 0       Replicas: 0     Isr: 0
+*												...
+*												...
+*
 *  	So, how do we deal with this?
 *  	
 *  	We need to change the ReplicationFactor of our topics. To do that, we can try to use the following command:
 *  	
 *  		kafka-topics.bat --zookeper localhost:2181 --alter --topic ECOMMERCE_NEW_ORDER --partitions 3 --replication-factor 2
 *  	
-*  	But that will caught us an error. The replication factor CANNOT, and I quote, "CANNOT BE CHANGED AFTER THE TOPIC'S CREATION".
+*  	But that will give us an error. The replication factor CANNOT, and I quote, "CANNOT BE CHANGED AFTER THE TOPIC'S CREATION".
 *  	
 *  	So, what now? 
 *  	
-*  	Open the server.propertie's file from both brokers, and add the following line to then (in the example, they added it bellow the broker.id)
+*  	Open the server.properties file from both brokers, and add the following line to then (in the example, they added it bellow the broker.id)
 *  	
 *  		default.replication.factor = 2;
 *  	
@@ -135,10 +159,30 @@
 *  	Open a new command line and use the command:
 *  
 *  						kafka-topics.bat --describe --bootstrap-server localhost:9092
-*  
-*  	It will show you all the topics created by your services, but, even better, the Leader property (that represents the broker 
-*  	where the topic is running) will have other values than 0 (the 0 represented the id of the broker, so you'll see the number
-*  	of the id you selected to the new broker here).
+*  	
+*	It will generate something as bellow:
+*
+* 		Topic: ECOMMERCE_NEW_ORDER      PartitionCount: 3       ReplicationFactor: 2    Configs: segment.bytes=1073741824
+* 		        Topic: ECOMMERCE_NEW_ORDER      Partition: 0    Leader: 2       Replicas: 2,0   Isr: 2,0
+* 		        Topic: ECOMMERCE_NEW_ORDER      Partition: 1    Leader: 0       Replicas: 0,2   Isr: 0,2
+* 		        Topic: ECOMMERCE_NEW_ORDER      Partition: 2    Leader: 2       Replicas: 2,0   Isr: 2,0
+*
+* 		Topic: ECOMMERCE_SEND_EMAIL     PartitionCount: 3       ReplicationFactor: 2    Configs: segment.bytes=1073741824
+* 		        Topic: ECOMMERCE_SEND_EMAIL     Partition: 0    Leader: 2       Replicas: 2,0   Isr: 2,0
+* 		        Topic: ECOMMERCE_SEND_EMAIL     Partition: 1    Leader: 0       Replicas: 0,2   Isr: 0,2
+* 		        Topic: ECOMMERCE_SEND_EMAIL     Partition: 2    Leader: 2       Replicas: 2,0   Isr: 2,0
+*
+* 		Topic: __consumer_offsets       PartitionCount: 50      ReplicationFactor: 1    Configs: compression.type=producer,cleanup.policy=compact,segment.bytes=104857600
+* 		        Topic: __consumer_offsets       Partition: 0    Leader: 2       Replicas: 2     Isr: 2
+* 		        Topic: __consumer_offsets       Partition: 1    Leader: 0       Replicas: 0     Isr: 0
+*												...
+*												...
+*
+*			NOTE TO SELF: I've changed the "partitions" property to 3 when making the changes I'm talking here
+*
+*  	You can see by the table above all the topics created by your services, but, even better, the Leader property (that represents 
+* 	the broker where the topic is running) will have other values than 0 (the 0 represented the id of the broker, so you'll see 
+*	the number of the id you selected to the new broker here).
 *  
 *  	Now, when the Leader now falls Kafka will send the messages to any other Leaders available.
 *  
@@ -150,9 +194,50 @@
 *  					  how many replics of that topic are updated until that moment.
 *  
 *  
+*  III. A FIVE BROKER'S CLUSTER: EXPLORING LEADERS AND REPLICS
 *  
+*  	So, after seeing the problem with the "__consumer_offsets", we wonder what we could do, right? In the server.properties file, 
+*  	there is a replication configuration specific to these topics, called "offsets.topic.replication.factor". You can see in the
+*	the comments of that line that even the Kafka's team recommend to use a value different than one for environment differents  
+*  	than development.
 *  
+*  	So, let's start this class with:
 *  
+*  		1. Change the line "offsets.topic.replication.factor" to 3;
+*  		2. Change the line "transaction.state.log.replication.factor" to 3;
+*  		3. Change the "default.replication.factor" to 3;
+*  		4. Create the properties for two new clusters, and let's get these parties GOIIIING!!!
 *  
-
-				  
+*	  GOOD TO KNOW: if you do this process with your services running, when you start the brokers again the services will start on the brokers that 
+*					already existed.
+*	
+*	In this class we've created more brokers and executed then, before starting to get brokers down and up to see how kafka react to each of the scenarios
+*	
+*	  GOOD TO KNOW: The ISR property can be seeing as "which brokers are updated with my message". You can get into scenarios
+*					where the property "Replicas" says a topic is in the brokers "3,2,1", but IRS says the only ones that are up to date are "2,1".
+*					That may happens when the broker 3 is down.
+*
+*	When a Leader is down, a Replica will try to assume it's place as a new Leader (but the Replica must have some properties that Kafka will look for)
+*
+*		When the Leader that went down comes back, the messages it looses will be sent again and he will be up to date with the others (but our services
+*		not necessarily are going to run again, because they already ran in the Replicas that became leaders.
+*
+*
+*
+*	HAVE THIS IN MIND: when you create N brokers, you stop having 1 fail node and start to have N. What does that mean? It means that, if we have 3 nodes
+*					   and they are all Replicas, and they all go down, then our Messageria will stop working, there is nothing we can do about it. Buuuut,
+*					   the change all 3 are down is lower than the chance only one is down, so... yeah, it's better.
+*
+*
+*  IV. ACKS AND RELIABILITY
+*
+*	
+*
+*
+*
+*
+*
+*
+*
+*
+*
