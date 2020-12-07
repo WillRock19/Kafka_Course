@@ -217,7 +217,7 @@
 *					where the property "Replicas" says a topic is in the brokers "3,2,1", but IRS says the only ones that are up to date are "2,1".
 *					That may happens when the broker 3 is down.
 *
-*	When a Leader is down, a Replica will try to assume it's place as a new Leader (but the Replica must have some properties that Kafka will look for)
+*	When a Leader falls, a Replica will try to assume it's place as a new Leader (but the Replica must have some properties that Kafka will look for)
 *
 *		When the Leader that went down comes back, the messages it looses will be sent again and he will be up to date with the others (but our services
 *		not necessarily are going to run again, because they already ran in the Replicas that became leaders.
@@ -259,7 +259,7 @@
 *
 *				-> The thing is: if I have N replicas, the only way to guarantee all of then will be updated before return a to the get() is using "all";
 *
-*				-> But then again, testing manually we saw some different behavior: when we run our program with this configuration, then stop the kafka's server
+*				-> But then again, testing manually we saw some different behavior: when we run our program with this configuration, then stop the a specific broker
 *				   from our replicas, the topics will be reorganized and Kafka will await for the ack from all the machines that still in sync... which will be 
 *				   only the one we kept running.
 *
