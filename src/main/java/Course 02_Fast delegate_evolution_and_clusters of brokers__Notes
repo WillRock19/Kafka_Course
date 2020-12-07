@@ -50,6 +50,6 @@
 * 
 *  													CLASS 03_HTTP Server
 * 
-* 
-* 
-* 
+*  Let's create a service, service-http-ecommerce, that will represent a webpage from where the user will send the first message
+*  with it's data to the system. To do that, we'll use the HttpServlet library, and create a service which will start a server 
+*  and create a message to send to our queue.
