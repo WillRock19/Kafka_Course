@@ -68,9 +68,26 @@
 *  
 *  													CLASS 04_Broker's clusters
 *  
+*  SINGLE POINT OF FAILURE DO BROKER
+*  
+*  	Now we have many services that we can let be running at same time. We can run any of these as many times as we want, and that's
+*  	awesome. And, REMEMBER: each one of the consumer groups will consume, in parallel, at most, the number of partitions 
+*  	that exists for their given topic.
+*  
+*  			EXAMPLE: 3 consumers will consume from 3 partitions, and Kafka will define which message goes for which one
+*  
+*  
+*   THE PROBLEM: even if we can have many services running at same time, if the Kafka's broker goes down, it all goes down. Sucks, doesn't it?
+*  
+*  		GOOD TO KNOW: as we've used send().get(), the dispatcher will be waiting for the broker as much as it need to, so the program will get
+*  					  stuck if we send a message with the broker down. Now, if the broker comes back, they will start working again and deliver
+* 	 				  it the messages that got stuck, without any work from my part.
+*  	
+*  To solve this problem, we MUST RUN MANY INSTANCES OF THE BROKER, as we do for the SERVICES :)
 *  
 *  
 *  
 *  
 *  
 *  
+				  
