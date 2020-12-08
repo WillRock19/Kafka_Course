@@ -45,4 +45,10 @@
 *					4. From the GenerateAllReportsServlet, I can execute a "task dispatcher", that will send a message with a task
 *					   to be executed from all users. This will be the approach we shall execute in this class.
 *
-*					   
+*					   	So, to do this we created the BatchSendMessageService, a Kafka's consumer that will listen to messages of 
+*						the type SEND_MESSAGE_TO_ALL_USERS and send any topics that may come with this message to all existing users
+*						in our database. 
+*						
+*						Since we are using it to send a USER_GENERATE_READING_REPORT for all users, it will send it a message to this
+*						topic in our broker, and the consumer we've already created in the start of this class, the ReadingReportService,
+*						will listen to it and generate a report for each of the users it receive.
