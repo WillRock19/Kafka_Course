@@ -13,18 +13,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.servlet.Source;
 
 import curso_kafka.models.Order;
-import curso_kafka.models.User;
 
 public class GenerateAllReportsServlet extends HttpServlet 
 {
-	private final KafkaDispatcher<User> userDispatcher = new KafkaDispatcher<>();
+	private final KafkaDispatcher<String> batchDispatcher = new KafkaDispatcher<>();
 
 	@Override
 	public void destroy() 
 	{
 		super.destroy();
 		try {
-			userDispatcher.close();
+			batchDispatcher.close();
 		} 
 		catch (IOException e) {
 			e.printStackTrace();
@@ -34,22 +33,13 @@ public class GenerateAllReportsServlet extends HttpServlet
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException 
 	{
-		try {
-			for(User user : users) 
-			{
-				/* If we use as key the UUID of the user, the algorithm will execute reports of same
-				 * user one after another, since it won't make to partitions execute at same time (remember 
-				 * that the algorithm uses the key to understand how to execute the data in different
-				 * partitions... so, two values with the same key will always be executed by the same
-				 * partition, one after another.
-				 */
-				userDispatcher.send("USER_GENERATE_READING_REPORT", user.getUUID(), user);
-			}
-			
-			System.out.println("Reports generated for all users!!!");
+		try 
+		{
+			batchDispatcher.send("SEND_MESSAGE_TO_ALL_USERS", "USER_GENERATE_READING_REPORT", "USER_GENERATE_READING_REPORT");
+			System.out.println("Reports order generated for all users!!!");
 			
 			resp.setStatus(HttpServletResponse.SC_OK);
-			resp.getWriter().println("New order sent! ^^");
+			resp.getWriter().println("Orders have been sent! ^^");
 		} 
 		catch (InterruptedException e) {
 			throw new ServletException(e);
