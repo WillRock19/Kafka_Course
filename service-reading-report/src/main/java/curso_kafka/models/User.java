@@ -8,4 +8,12 @@ public class User
 	{
 		this.uuid = uuid;
 	}
+
+	public String getReportPath() {
+		return "target/" + uuid + "_report.txt";
+	}
+
+	public String getUUID() {
+		return this.uuid;
+	}
 }

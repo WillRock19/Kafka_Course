@@ -6,8 +6,8 @@
 * 	class discussing the subject and creating a new service, "service-reading-report", to generate this 
 *	kind of report.
 *	
-*	
-*	
+*	Then, we will create a new service, that will be responsible for creating a reports in batch (imagine 
+*	it as a service that will run monthly and generate reports for every single user we have in this DB).
 *	
 *	
 *	
