@@ -9,14 +9,40 @@
 *	Then, we will create a new service, that will be responsible for creating a reports in batch (imagine 
 *	it as a service that will run monthly and generate reports for every single user we have in this DB).
 *	
+*	1. About the GenerateAllReportsServlet file
 *	
+*		This servlet was created to trigger the report generation for many users in a single row. With that being said,
+*		let's think: our servelet will receive an HTTP request that shall trigger the generation of reports, but, as we've
+*		discussed in the Course 02, I want to send that data as fast as I can to the brokers, so I don't fall into the 
+*		problem of something goes wrong and I loose those data inside my servlet, or, even worst, I generate messages for
+*		part of the users I've received, and not all of them (them, in the frontend, my user may use F5 in the page, and
+*		the full process might be triggered again).
+*
+*		So, I must do something like a Fast Delegate, and give that messages to someone as fast as I can. How? 
+*		
 *	
-*	
-*	
-*	
-*	
-*	
-*	
-*	
-*	
-*	
+*			The way we are going to do it is: I receive the request in the servlet, send ONE single message to the brokers 
+*			telling them to "generate all reports" and then send, as fast as I possibly can, an answer to the frontend 
+*			with an OK status;  
+*		
+*			  	The problem: in this new service, I won't have the user's ids I've received with the HTTP request
+*							 on the GenerateAllReportsServlet. So, how to deal with this? There are some ways...
+*		
+*					1. In the new service, I make an HTTP request to OTHER service, asking the users Ids... and await the		
+*					   answer before proceed (since the user won't be awaiting the answer no more... this could be an OK
+*					   approach).
+*		
+*					2. In the new service, I could access the database from the CreateUsers's service to find all the ids
+*					   (not that good because I make two services depends on a single database... but valid, depending on
+*					   the situation);
+*
+*					3. In the new service, I can storage a list of users ids. To do so, we could send a message to the broker
+*					   each time a user is registered in my database inside the service-create-user, and this new service could
+*					   be a consumer to that messages, saving locally each of those user's data so it always has a list of users's
+*					   ids to generate the full report (it may generate some other problems, as generate messages when the user
+*					   is deleted, so my list of user ids may always be valid).
+*
+*					4. From the GenerateAllReportsServlet, I can execute a "task dispatcher", that will send a message with a task
+*					   to be executed from all users. This will be the approach we shall execute in this class.
+*
+*					   
