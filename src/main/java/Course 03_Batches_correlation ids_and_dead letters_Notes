@@ -2,5 +2,21 @@
 * 													CLASS 01_Batch
 * 
 * 
-* 
-* 	
+* 	In a situation where we generate reports, we might want to use messages in batch. We've starting this
+* 	class discussing the subject and creating a new service, "service-reading-report", to generate this 
+*	kind of report.
+*	
+*	
+*	
+*	
+*	
+*	
+*	
+*	
+*	
+*	
+*	
+*	
+*	
+*	
+*	
