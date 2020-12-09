@@ -13,7 +13,7 @@ import curso_kafka.models.User;
 
 public class ReadingReportService {
 
-	private static final Path source = new File("src/main/resources/Report.txt").toPath();
+	private static final Path source = new File("src/main/resources/report.txt").toPath();
 	private final KafkaDispatcher<User> orderDispatcher = new KafkaDispatcher<User>();
 	
 	public static void main(String[] args) {
@@ -33,7 +33,8 @@ public class ReadingReportService {
 	private void parseRecord(ConsumerRecord<String, User> record) throws IOException 
 	{
 		var user = record.value();
-		
+		var u2 = getClass().getClassLoader().getResource("report.txt");
+
 		System.out.println("--------------------------------------------");
 		System.out.println("Processing report for " + user);
 		

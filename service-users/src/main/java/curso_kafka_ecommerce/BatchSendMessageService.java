@@ -6,10 +6,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
 
 import curso_kafka.models.Order;
 import curso_kafka.models.User;
@@ -31,8 +34,8 @@ public class BatchSendMessageService {
 				BatchSendMessageService.class.getTypeName(), 
 				"SEND_MESSAGE_TO_ALL_USERS",  
 				batchService::parseRecord,
-				Order.class,
-				new HashMap<>()))
+				String.class,
+				Map.of()))
 		{
 			service.run();
 		}	
