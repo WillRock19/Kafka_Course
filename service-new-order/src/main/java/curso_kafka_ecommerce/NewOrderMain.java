@@ -11,9 +11,9 @@ public class NewOrderMain {
 
 	public static void main(String[] args) throws InterruptedException, ExecutionException, IOException 
 	{
-		try(var orderDispatcher = new KafkaDispatcher<Order>())
+		try(var orderDispatcher = new KafkaDispatcher<Order>(NewOrderMain.class.getName()))
 		{
-			try(var emailDispatcher = new KafkaDispatcher<String>())
+			try(var emailDispatcher = new KafkaDispatcher<String>(NewOrderMain.class.getName()))
 			{
 				for(var i = 0; i < 10; i++) 
 				{

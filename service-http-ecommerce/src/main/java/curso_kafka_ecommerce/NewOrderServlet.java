@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -15,8 +14,8 @@ import curso_kafka.models.Order;
 
 public class NewOrderServlet extends HttpServlet {
 
-	private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<>();
-	private final KafkaDispatcher<String> emailDispatcher = new KafkaDispatcher<>();
+	private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<>(NewOrderServlet.class.getName());
+	private final KafkaDispatcher<String> emailDispatcher = new KafkaDispatcher<>(NewOrderServlet.class.getName());
 
 	@Override
 	public void destroy() 
