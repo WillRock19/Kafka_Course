@@ -101,6 +101,8 @@
 *		To do this, the first step will be turn the creation of the correlationId something required to each sender, so the people who use
 *		the dispatchers will always know that info NEEDS to be there, so we may create our breadcrumb.
 *
+*		Then, since the services will be responsible for instantiating the CorrelationId, we can use it to our advantage to associate the
+*		existing one, that our server might have received in it's method, with the new one, that it must send with the message that goes 
+*		to the broker
 *
-*
-* 
+* 		

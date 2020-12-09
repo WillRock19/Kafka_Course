@@ -14,4 +14,8 @@ public class CorrelationId
 	public String toString() {
 		return "CorrelationId { id='" + id + "'}";
 	}
+
+	public CorrelationId continueWith(String newId) {
+		return new CorrelationId(id + "-" + newId);
+	}
 }
