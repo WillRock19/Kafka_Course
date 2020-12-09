@@ -90,4 +90,17 @@
 *
 *		So, the first change we are going to make is change our KafkaDispatcher to add this identifier in it.
 *	
-*		
+*		Now that we are adding the service that dispatch the message, we want to concatenate informations that comes from other service
+*		to the current before dispatch again. What do I mean? Imagine we dispatch a message in the HttpClient. Then, our BatchSendMessage
+*		will hear it ang generate a new dispatch, that will trigger the report generation for each user. In this case, we will concatenate
+*		the info that came with the HTTP service with the info from the Batch service before dispatch it again, and keep doing it for any
+*		services that comes in our way.
+
+*		THis way, our correlationId will become a breadcrumb... and we might be able to use it at our favor at any time.
+*
+*		To do this, the first step will be turn the creation of the correlationId something required to each sender, so the people who use
+*		the dispatchers will always know that info NEEDS to be there, so we may create our breadcrumb.
+*
+*
+*
+* 

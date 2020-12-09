@@ -10,7 +10,7 @@ import curso_kafka.models.Order;
 
 public class FraudDetectorService {
 
-	private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<Order>(FraudDetectorService.class.getSimpleName());
+	private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<Order>();
 	
 	public static void main(String[] args) {
 		var fraudService = new FraudDetectorService();
@@ -47,11 +47,15 @@ public class FraudDetectorService {
 		
 		if(orderIsFraud(order)) {
 			System.out.println("Order is a fraud! You phony!!! ¬¬");
-			orderDispatcher.send("ECOMMERCE_ORDER_REJECTED", order.getEmail(), order);
+			
+			orderDispatcher.send("ECOMMERCE_ORDER_REJECTED", order.getEmail(), 
+					new CorrelationId(FraudDetectorService.class.getSimpleName()), order);
 		}
 		else {
 			System.out.println("Aproved: " + order);
-			orderDispatcher.send("ECOMMERCE_ORDER_APPROVED", order.getEmail(), order);
+			
+			orderDispatcher.send("ECOMMERCE_ORDER_APPROVED", order.getEmail(),  
+					new CorrelationId(FraudDetectorService.class.getSimpleName()), order);
 		}
 	}
 	

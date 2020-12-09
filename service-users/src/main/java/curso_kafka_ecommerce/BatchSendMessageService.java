@@ -13,7 +13,7 @@ import curso_kafka.models.User;
 
 public class BatchSendMessageService {
 
-	private final KafkaDispatcher<User> userDispatcher = new KafkaDispatcher<>(BatchSendMessageService.class.getSimpleName());
+	private final KafkaDispatcher<User> userDispatcher = new KafkaDispatcher<>();
 	private Connection connection;
 
 	BatchSendMessageService() throws SQLException {
@@ -61,7 +61,7 @@ public class BatchSendMessageService {
 		
 		for(User user : getAllUsers()) 
 		{
-			userDispatcher.send(message.getPayload(), user.getUUID(), user);
+			userDispatcher.send(message.getPayload(), user.getUUID(), new CorrelationId(BatchSendMessageService.class.getSimpleName()), user);
 		}
 
 	}

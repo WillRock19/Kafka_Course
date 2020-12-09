@@ -14,8 +14,8 @@ import curso_kafka.models.Order;
 
 public class NewOrderServlet extends HttpServlet {
 
-	private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<>(NewOrderServlet.class.getSimpleName());
-	private final KafkaDispatcher<String> emailDispatcher = new KafkaDispatcher<>(NewOrderServlet.class.getSimpleName());
+	private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<>();
+	private final KafkaDispatcher<String> emailDispatcher = new KafkaDispatcher<>();
 
 	@Override
 	public void destroy() 
@@ -41,8 +41,8 @@ public class NewOrderServlet extends HttpServlet {
 			var order = new Order(orderId, amount, userEmail);
 			var emailMessage = "Be welcome! We are processing your order :)";
 
-			orderDispatcher.send("ECOMMERCE_NEW_ORDER", userEmail, order);
-			emailDispatcher.send("ECOMMERCE_SEND_EMAIL", userEmail, emailMessage);
+			orderDispatcher.send("ECOMMERCE_NEW_ORDER", userEmail, new CorrelationId(NewOrderServlet.class.getSimpleName()), order);
+			emailDispatcher.send("ECOMMERCE_SEND_EMAIL", userEmail, new CorrelationId(NewOrderServlet.class.getSimpleName()), emailMessage);
 			
 			System.out.println("New order sent successfuly");
 			

@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutionException;
 
 public class GenerateAllReportsServlet extends HttpServlet {
 
-    private final KafkaDispatcher<String> batchDispatcher = new KafkaDispatcher<>(GenerateAllReportsServlet.class.getSimpleName());
+    private final KafkaDispatcher<String> batchDispatcher = new KafkaDispatcher<>();
 
     @Override
     public void destroy() {
@@ -25,7 +25,11 @@ public class GenerateAllReportsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
 
-            batchDispatcher.send("ECOMMERCE_SEND_MESSAGE_TO_ALL_USERS", "ECOMMERCE_USER_GENERATE_READING_REPORT", "ECOMMERCE_USER_GENERATE_READING_REPORT");
+            batchDispatcher.send(
+            		"ECOMMERCE_SEND_MESSAGE_TO_ALL_USERS", 
+            		"ECOMMERCE_USER_GENERATE_READING_REPORT", 
+            		 new CorrelationId(GenerateAllReportsServlet.class.getSimpleName()),
+            		"ECOMMERCE_USER_GENERATE_READING_REPORT");
 
             System.out.println("Sent generate report to all users");
             resp.setStatus(HttpServletResponse.SC_OK);

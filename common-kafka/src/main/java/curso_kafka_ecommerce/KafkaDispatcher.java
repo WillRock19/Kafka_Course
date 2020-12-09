@@ -15,17 +15,15 @@ import curso_kafka.services.GsonSerializer;
 class KafkaDispatcher<T> implements Closeable
 {
 	private final KafkaProducer<String, Message<T>> producer;
-	private final String nameOfCaller;
 	
-	KafkaDispatcher(String nameOfCaller) 
+	KafkaDispatcher() 
 	{
 		this.producer = new KafkaProducer<String, Message<T>>(produceProperties());	
-		this.nameOfCaller = nameOfCaller;
 	}
 
-	public void send(String topic, String key, T payload) throws InterruptedException, ExecutionException 
+	public void send(String topic, String key, CorrelationId correlationId, T payload) throws InterruptedException, ExecutionException 
 	{
-		var message = new Message<T>(new CorrelationId(nameOfCaller), payload);
+		var message = new Message<T>(correlationId, payload);
 		var record = new ProducerRecord<String, Message<T>>(topic, key, message);
 		
 		producer.send(record, printResultCallback()).get();
