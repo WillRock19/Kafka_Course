@@ -49,13 +49,13 @@ public class FraudDetectorService {
 			System.out.println("Order is a fraud! You phony!!! ¬¬");
 			
 			orderDispatcher.send("ECOMMERCE_ORDER_REJECTED", order.getEmail(), 
-					new CorrelationId(FraudDetectorService.class.getSimpleName()), order);
+					message.getCorrelationId().continueWith(FraudDetectorService.class.getSimpleName()), order);
 		}
 		else {
 			System.out.println("Aproved: " + order);
 			
 			orderDispatcher.send("ECOMMERCE_ORDER_APPROVED", order.getEmail(),  
-					new CorrelationId(FraudDetectorService.class.getSimpleName()), order);
+					message.getCorrelationId().continueWith(FraudDetectorService.class.getSimpleName()), order);
 		}
 	}
 	
