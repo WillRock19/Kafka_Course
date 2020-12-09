@@ -14,4 +14,12 @@ public class Message<T>
 	public String toString() {
 		return "Message { id=" + id + ",payload=" + payload + "}";
 	}
+	
+	public T getPayload() {
+		return payload;
+	}
+	
+	public CorrelationId getCorrelationId() {
+		return id;
+	}
 }
