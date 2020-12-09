@@ -13,7 +13,7 @@ public class LogService
 	{
 		var logService = new LogService();
 		
-		try(var service = new KafkaService(
+		try(var service = new KafkaService<>(
 				LogService.class.getSimpleName(), 
 				Pattern.compile("ECOMMERCE.*"), 
 				logService::parseRecord,
@@ -24,7 +24,7 @@ public class LogService
 		}	
 	}
 
-	private void parseRecord(ConsumerRecord<String,String> record) 
+	private void parseRecord(ConsumerRecord<String, Message<String>> record) 
 	{
 		System.out.println("--------------------------------------------");
 		System.out.println("Logging message from " + record.topic());
