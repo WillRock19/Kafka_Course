@@ -72,7 +72,7 @@
 *		That's what we are going to do in this class.
 *
 *
-*	2. Implementing a CorrelationId
+*	2. Setting up a CorrelationId
 *
 *		Since the correlationId will be something that every message must have, we can implement it in some ways:
 *
@@ -80,3 +80,7 @@
 *			2. Creating a class to wrap the message and the correlationId in a single place;
 *
 *		Here, we are going to do the second option.
+*
+*
+*	3. Implementing the Correlation Id
+*	
