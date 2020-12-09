@@ -105,4 +105,10 @@
 *		existing one, that our server might have received in it's method, with the new one, that it must send with the message that goes 
 *		to the broker
 *
-* 		
+* 		If we have any async requests in the middle of the service-calling-service road, we might want to add it in the CorrelationId too,
+*		so we can have the best breadcrumb ever! :D
+*
+*
+*
+*
+*
