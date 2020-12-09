@@ -1,18 +1,15 @@
 package curso_kafka_ecommerce;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-
-import curso_kafka_ecommerce.KafkaService;
 
 public class EmailService {
 
 	public static void main(String[] args) {
 		var emailService = new EmailService();
 		
-		try(var service = new KafkaService(
+		try(var service = new KafkaService<>(
 				EmailService.class.getSimpleName(), 
 				"ECOMMERCE_SEND_EMAIL", 
 				emailService::parseRecord,
@@ -23,7 +20,7 @@ public class EmailService {
 		}
 	}
 
-	private void parseRecord(ConsumerRecord<String,String> record) 
+	private void parseRecord(ConsumerRecord<String, Message<String>> record) 
 	{
 		System.out.println("--------------------------------------------");
 		System.out.println("Sending email...");

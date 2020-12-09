@@ -14,8 +14,8 @@ import curso_kafka.models.Order;
 
 public class NewOrderServlet extends HttpServlet {
 
-	private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<>(NewOrderServlet.class.getName());
-	private final KafkaDispatcher<String> emailDispatcher = new KafkaDispatcher<>(NewOrderServlet.class.getName());
+	private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<>(NewOrderServlet.class.getSimpleName());
+	private final KafkaDispatcher<String> emailDispatcher = new KafkaDispatcher<>(NewOrderServlet.class.getSimpleName());
 
 	@Override
 	public void destroy() 

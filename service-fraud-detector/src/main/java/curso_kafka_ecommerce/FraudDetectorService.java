@@ -10,7 +10,7 @@ import curso_kafka.models.Order;
 
 public class FraudDetectorService {
 
-	private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<Order>(FraudDetectorService.class.getName());
+	private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<Order>(FraudDetectorService.class.getSimpleName());
 	
 	public static void main(String[] args) {
 		var fraudService = new FraudDetectorService();

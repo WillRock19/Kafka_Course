@@ -13,7 +13,7 @@ import curso_kafka.models.User;
 
 public class BatchSendMessageService {
 
-	private final KafkaDispatcher<User> userDispatcher = new KafkaDispatcher<>(BatchSendMessageService.class.getName());
+	private final KafkaDispatcher<User> userDispatcher = new KafkaDispatcher<>(BatchSendMessageService.class.getSimpleName());
 	private Connection connection;
 
 	BatchSendMessageService() throws SQLException {
