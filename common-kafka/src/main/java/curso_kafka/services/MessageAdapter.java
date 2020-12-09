@@ -44,14 +44,13 @@ public class MessageAdapter implements JsonSerializer<Message>, JsonDeserializer
 			/* This opens the change that someone send a class that we cannot work with... one approach to that
 			 * would be test the payloadType in some "list of accepted classes". Since we don't want to focus
 			 * on this, we are keeping this simple. */
-			var payload = context.deserialize(jsonObject.get("payloadId"), Class.forName(payloadType));
+			var payload = context.deserialize(jsonObject.get("payload"), Class.forName(payloadType));
 			return new Message(correlationId, payload);
 		} 
-		catch (JsonParseException | ClassNotFoundException e) {
-			e.printStackTrace();
+		catch (JsonParseException | ClassNotFoundException e) 
+		{
+			throw new JsonParseException(e);
 		}
-		
-		return null;
 	}
 
 }

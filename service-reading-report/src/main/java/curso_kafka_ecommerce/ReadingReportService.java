@@ -30,11 +30,11 @@ public class ReadingReportService {
 		}	
 	}
 
-	private void parseRecord(ConsumerRecord<String, User> record) throws IOException 
+	private void parseRecord(ConsumerRecord<String, Message<User>> record) throws IOException 
 	{
-		var user = record.value();
-		var u2 = getClass().getClassLoader().getResource("report.txt");
-
+		var message = record.value();
+		var user = message.getPayload();
+		
 		System.out.println("--------------------------------------------");
 		System.out.println("Processing report for " + user);
 		

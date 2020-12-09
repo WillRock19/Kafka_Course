@@ -17,24 +17,24 @@ import curso_kafka.services.GsonDeserializer;
 
 class KafkaService<T> implements Closeable
 {
-	private final KafkaConsumer<String, T> consumer;
+	private final KafkaConsumer<String, Message<T>> consumer;
 	private final IConsumerFunction consumerFunction;
 
-	KafkaService(String groupId, String topic, IConsumerFunction consumerFunction, Class<T> type, Map<String, String> extraPropertiesToUse) 
+	KafkaService(String groupId, String topic, IConsumerFunction<T> consumerFunction, Class<T> type, Map<String, String> extraPropertiesToUse) 
 	{
 		this(groupId, consumerFunction, type, extraPropertiesToUse);	
 		consumer.subscribe(Collections.singletonList(topic));
 	}
 
-	KafkaService(String groupId, Pattern topic, IConsumerFunction consumerFunction, Class<T> type, Map<String, String> extraPropertiesToUse) {
+	KafkaService(String groupId, Pattern topic, IConsumerFunction<T> consumerFunction, Class<T> type, Map<String, String> extraPropertiesToUse) {
 		this(groupId, consumerFunction, type, extraPropertiesToUse);
 		consumer.subscribe(topic);
 	}
 
-	private KafkaService(String groupId, IConsumerFunction consumerFunction, Class<T> type, Map<String, String> extraPropertiesToUse) 
+	private KafkaService(String groupId, IConsumerFunction<T> consumerFunction, Class<T> type, Map<String, String> extraPropertiesToUse) 
 	{
 		this.consumerFunction = consumerFunction;
-		this.consumer = new KafkaConsumer<String, T>(produceProperties(groupId, type, extraPropertiesToUse));
+		this.consumer = new KafkaConsumer<String, Message<T>>(produceProperties(groupId, type, extraPropertiesToUse));
 	}
 
 	void run() 
@@ -78,11 +78,6 @@ class KafkaService<T> implements Closeable
 		properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupID);
 		properties.setProperty(ConsumerConfig.CLIENT_ID_CONFIG, UUID.randomUUID().toString());	
 		
-		/* I'm changing the comment that was here before, because now we are getting the type of the data 
-		 * from the consumers that instantiate this KafkaService */
-		properties.setProperty(GsonDeserializer.TYPE_CONFIG, type.getName());
-
-		/*Adding extra properties, that our consumers may want to be passed on creating of the Kafka consumer's class */
 		properties.putAll(extraPropertiesToUse);
 		
 		return properties;

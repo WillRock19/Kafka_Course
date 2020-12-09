@@ -54,9 +54,10 @@ public class CreateUserService {
 		}
 	}
 
-	private void parseRecord(ConsumerRecord<String, Order> record) throws InterruptedException, ExecutionException, SQLException 
+	private void parseRecord(ConsumerRecord<String, Message<Order>> record) throws InterruptedException, ExecutionException, SQLException 
 	{
-		var order = record.value();
+		var message = record.value();
+		var order = message.getPayload();
 		
 		System.out.println("--------------------------------------------");
 		System.out.println("Processing new order. Checking for new user...");

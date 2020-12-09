@@ -26,7 +26,7 @@ public class FraudDetectorService {
 		}	
 	}
 
-	private void parseRecord(ConsumerRecord<String, Order> record) throws InterruptedException, ExecutionException 
+	private void parseRecord(ConsumerRecord<String, Message<Order>> record) throws InterruptedException, ExecutionException 
 	{
 		System.out.println("--------------------------------------------");
 		System.out.println("Processing new order. Checking for frauds...");
@@ -42,7 +42,8 @@ public class FraudDetectorService {
 			e.printStackTrace();
 		}
 		
-		var order = record.value();
+		var message = record.value();
+		var order = message.getPayload();
 		
 		if(orderIsFraud(order)) {
 			System.out.println("Order is a fraud! You phony!!! ¬¬");
