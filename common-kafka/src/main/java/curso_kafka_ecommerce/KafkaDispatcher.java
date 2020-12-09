@@ -9,22 +9,23 @@ import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringSerializer;
 
 import curso_kafka.services.GsonSerializer;
 
 class KafkaDispatcher<T> implements Closeable
 {
 	private final KafkaProducer<String, Message<T>> producer;
-
-	KafkaDispatcher() 
+	private final String nameOfCaller;
+	
+	KafkaDispatcher(String nameOfCaller) 
 	{
 		this.producer = new KafkaProducer<String, Message<T>>(produceProperties());	
+		this.nameOfCaller = nameOfCaller;
 	}
 
 	public void send(String topic, String key, T payload) throws InterruptedException, ExecutionException 
 	{
-		var message = new Message<T>(new CorrelationId(), payload);
+		var message = new Message<T>(new CorrelationId(nameOfCaller), payload);
 		var record = new ProducerRecord<String, Message<T>>(topic, key, message);
 		
 		producer.send(record, printResultCallback()).get();

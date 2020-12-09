@@ -2,10 +2,8 @@ package curso_kafka_ecommerce;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
@@ -14,7 +12,6 @@ import curso_kafka.models.User;
 public class ReadingReportService {
 
 	private static final Path source = new File("src/main/resources/report.txt").toPath();
-	private final KafkaDispatcher<User> orderDispatcher = new KafkaDispatcher<User>();
 	
 	public static void main(String[] args) {
 		var readingReportService = new ReadingReportService();

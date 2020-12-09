@@ -4,22 +4,16 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.common.serialization.StringDeserializer;
 
-import curso_kafka.models.Order;
 import curso_kafka.models.User;
 
 public class BatchSendMessageService {
 
-	private final KafkaDispatcher<User> userDispatcher = new KafkaDispatcher<>();
+	private final KafkaDispatcher<User> userDispatcher = new KafkaDispatcher<>(BatchSendMessageService.class.getName());
 	private Connection connection;
 
 	BatchSendMessageService() throws SQLException {

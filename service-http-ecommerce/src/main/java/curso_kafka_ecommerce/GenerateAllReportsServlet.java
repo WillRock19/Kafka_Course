@@ -5,13 +5,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class GenerateAllReportsServlet extends HttpServlet {
 
-    private final KafkaDispatcher<String> batchDispatcher = new KafkaDispatcher<>();
+    private final KafkaDispatcher<String> batchDispatcher = new KafkaDispatcher<>(GenerateAllReportsServlet.class.getName());
 
     @Override
     public void destroy() {

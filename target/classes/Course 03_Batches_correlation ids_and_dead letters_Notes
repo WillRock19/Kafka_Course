@@ -84,3 +84,10 @@
 *
 *	3. Implementing the Correlation Id
 *	
+*		So, to really put the correlationId concept to use, we need to create it when we dispatch messages. But not only that; with the
+*		id, we want to send a text telling where the process started, so we have a breadcrumb from where to start looking if something
+*		goes wrong. 
+*
+*		So, the first change we are going to make is change our KafkaDispatcher to add this identifier in it.
+*	
+*		
