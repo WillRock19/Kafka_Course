@@ -52,3 +52,21 @@
 *						Since we are using it to send a USER_GENERATE_READING_REPORT for all users, it will send it a message to this
 *						topic in our broker, and the consumer we've already created in the start of this class, the ReadingReportService,
 *						will listen to it and generate a report for each of the users it receive.
+*
+*
+*
+* 													CLASS 02_Customized Serialization and Deserialization
+*
+*	1. The importance of the CorrelationId
+*
+*		There are still errors happening here and there. Think about it: we have an HTTP Server that will receive a request and send
+*		a message, that the broker will hear and a consumer will consume; the consumer will then send ANOTHER message to the broker,
+*		that yet ANOTHER consumer will hear, and only then that last one will generate the reports as we want. So... how can we track
+*		that process, so we may know which message comes from where? We need to know that, because an exception may occur in any part
+*		of this process (or even another one, that may be larger or have even more services in between), and we need to have a way to
+*		track what started the process where the exception happened.
+*
+*		To do that, we need a identification for the messages that we are generating, and that id must be created in the first moment
+*		the process started, and keep being pass forward through each of the services that will be triggered by that first one.
+*
+*		That's what we are going to do in this class.
