@@ -257,4 +257,5 @@
 *			But there are times in which we might want to send the message asynchronous and forget about it. Let's try to do
 *			it in this class.
 *
-*			
+*			We use the sendAsync in the BatchSendMessage, to test. As you can see in the console, it first tells us the message
+*			was sent, and then it confirms. That's fine, everything works.

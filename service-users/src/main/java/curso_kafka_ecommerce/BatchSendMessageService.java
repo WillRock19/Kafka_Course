@@ -60,8 +60,10 @@ public class BatchSendMessageService {
 		
 		for(User user : getAllUsers()) 
 		{
-			userDispatcher.send(message.getPayload(), user.getUUID(), 
+			userDispatcher.sendAsync(message.getPayload(), user.getUUID(), 
 					message.getCorrelationId().continueWith(BatchSendMessageService.class.getSimpleName()), user);
+			
+			System.out.println("Acho que enviei para " + user);
 		}
 
 	}
