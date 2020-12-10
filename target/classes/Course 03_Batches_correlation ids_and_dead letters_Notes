@@ -111,4 +111,50 @@
 *
 *	4. Architecture and failures until here
 *
+*		Let's review some specific aspects of Kafka and our application until here. We start running all our consumers, and then going to 
+*		the commandline to execute some kafka's command.
+*
+*		Execute two commands in two different tabs:
+*
+*									.\kafka-topics.bat --describe --bootstrap-server localhost:9092
+*
+*			
+*	
+*		Let's analyze the info they give one by one. First, Kafka-topics:						
+*
+Topic: ECOMMERCE_USER_GENERATE_READING_REPORT   PartitionCount: 3       ReplicationFactor: 3    Configs: segment.bytes=1073741824
+        Topic: ECOMMERCE_USER_GENERATE_READING_REPORT   Partition: 0    Leader: 1       Replicas: 1,3,4 Isr: 4,1,3
+        Topic: ECOMMERCE_USER_GENERATE_READING_REPORT   Partition: 1    Leader: 2       Replicas: 2,4,1 Isr: 4,1,2
+        Topic: ECOMMERCE_USER_GENERATE_READING_REPORT   Partition: 2    Leader: 3       Replicas: 3,1,2 Isr: 3,1,2
+        
+Topic: ECOMMERCE_SEND_EMAIL     PartitionCount: 3       ReplicationFactor: 3    Configs: segment.bytes=1073741824
+        Topic: ECOMMERCE_SEND_EMAIL     Partition: 0    Leader: 4       Replicas: 4,1,2 Isr: 4,2,1
+        Topic: ECOMMERCE_SEND_EMAIL     Partition: 1    Leader: 1       Replicas: 1,2,3 Isr: 3,1,2
+        Topic: ECOMMERCE_SEND_EMAIL     Partition: 2    Leader: 2       Replicas: 2,3,4 Isr: 4,3,2
+*
+*       											...
+*
+Topic: __consumer_offsets       PartitionCount: 50      ReplicationFactor: 3    Configs: compression.type=producer,cleanup.policy=compact,segment.bytes=104857600
+        Topic: __consumer_offsets       Partition: 0    Leader: 4       Replicas: 4,1,2 Isr: 4,2,1
+        Topic: __consumer_offsets       Partition: 1    Leader: 1       Replicas: 1,2,3 Isr: 3,1,2
+        Topic: __consumer_offsets       Partition: 2    Leader: 2       Replicas: 2,3,4 Isr: 4,3,2
+        Topic: __consumer_offsets       Partition: 3    Leader: 3       Replicas: 3,4,1 Isr: 4,1,3
+*
+*
+*       											...
+*
+*		They show us information about all the topics that are being used. Partition shows in which partition the topic is being executed,
+*		the ReplicationFactor shows in how many brokers that topic is being used (those brokers are the backup, since any of then  might 
+*		fall, and others might assume the job).
+*
+*			Leader: 	the broker who that is executing the messages as current;
+*			Replicas:	the brokers that might assume the job if the Leader falls for any reason;
+*			Isr:		where the information about the topics (the messages they received) are up to date;
+*
+*		When we use ACKS, we might have confirmations if the messages are used replicated in replicas, if the message was recorded only in
+*		the Leaders, etc. 
+*
+*		The "__consumer_offsets" shows some information about the offsets (messages generated) of each consumer in relation to each of the topics. 
+*
+*
 *
