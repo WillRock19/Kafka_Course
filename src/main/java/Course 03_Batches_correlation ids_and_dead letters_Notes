@@ -251,7 +251,7 @@
 *
 *	5. Asynchronous, retries and deadletters
 *
-*		The .get() on sending messages
+*		A. The .get() on sending messages
 *		
 *			When we send a message, we call .get(), which holds the current thread until Kafka confirms the message were sent. 
 *			But there are times in which we might want to send the message asynchronous and forget about it. Let's try to do
@@ -259,3 +259,32 @@
 *
 *			We use the sendAsync in the BatchSendMessage, to test. As you can see in the console, it first tells us the message
 *			was sent, and then it confirms. That's fine, everything works.
+*
+*			But, how do we deal with a situation where the topic we are using goes down after call sendAsync, but before the
+*			message was actually sent?
+*
+*				If there's no way to rebalance (imagine all Leaders and Replicas are down), the message will not be sent. As soon 
+*				as a the topic is back, it will send each message... but not in order. Kafka might process, for instance, the message
+*				3 before the 2 and the 11 before the 5, because, for any reason, it could not process one message then goes to another,
+*				got to process the another and then goes back to the one it couldn't, and just then it might process it. That might
+*				happen, and can be a problem.
+*
+*				Kafka does not GUARANTEE that the order in which the message was sent is going to be the order in which they are
+*				processed, but it guarantees  that the order in which the messages reachs a partition is going to be the order in
+*				which they are processed.
+*
+*				In other words:
+*
+*					I send message A, B, C, D. It might reach my partition in any order, as, for instance, C, D, B, A. But, since the
+*					partition received in this order, it going to execute the messages, one by one, following this new order until the
+*					end.
+*										In other words, it's going to execute C, then D, then B and, for last, A.
+*
+*
+*				That happens because of a property called "max.in.flight.requests.per.connection". By default it has value of 5, which 
+*				means that kafka may execute until 5 messages in parallel, without send any acknowledge for the sender and, furthermore,
+*				guarantee the order they are going to be executed.
+*
+*
+*
+*
