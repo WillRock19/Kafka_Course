@@ -280,11 +280,21 @@
 *					end.
 *										In other words, it's going to execute C, then D, then B and, for last, A.
 *
-*
 *				That happens because of a property called "max.in.flight.requests.per.connection". By default it has value of 5, which 
 *				means that kafka may execute until 5 messages in parallel, without send any acknowledge for the sender and, furthermore,
 *				guarantee the order they are going to be executed.
 *
 *
+*		B. Dead letters
 *
+*			There are other situations to consider. Imagine that we send our message, it gets to the broker, but when I'm consuming it,
+*			an error is thrown. How to deal with this?
 *
+*				Think about it: in this situation, the message is already being consumed. In other words: kafka won't try to send it again,
+*				because, for him, it's already send it; his part in this negotiation is over.
+*
+*				If you open our KafkaService, you'll see, in the method run, that we catch any exceptions and print it to the console. Nice.
+*				We could use this catch to dispatch a new message, a message to a service that will only work with errors. The most common
+*				way to call that type of messages is 'dead letters".
+*
+*			So, let's begin this class by changing the catch from our KafkaService's run method.
