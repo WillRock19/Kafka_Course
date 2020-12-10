@@ -251,4 +251,10 @@
 *
 *	5. Asynchronous, retries and deadletters
 *
+*		The .get() on sending messages
+*		
+*			When we send a message, we call .get(), which holds the current thread until Kafka confirms the message were sent. 
+*			But there are times in which we might want to send the message asynchronous and forget about it. Let's try to do
+*			it in this class.
 *
+*			

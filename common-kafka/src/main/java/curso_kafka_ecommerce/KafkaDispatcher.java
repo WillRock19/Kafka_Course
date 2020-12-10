@@ -4,11 +4,13 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 
 import curso_kafka.services.GsonSerializer;
 
@@ -23,10 +25,16 @@ class KafkaDispatcher<T> implements Closeable
 
 	public void send(String topic, String key, CorrelationId correlationId, T payload) throws InterruptedException, ExecutionException 
 	{
+		var future = sendAsync(topic, key, correlationId, payload);
+		future.get();
+	}
+	
+	public Future<RecordMetadata> sendAsync(String topic, String key, CorrelationId correlationId, T payload) throws InterruptedException, ExecutionException 
+	{
 		var message = new Message<T>(correlationId, payload);
 		var record = new ProducerRecord<String, Message<T>>(topic, key, message);
 		
-		producer.send(record, printResultCallback()).get();
+		return producer.send(record, printResultCallback());
 	}
 	
 	@Override
