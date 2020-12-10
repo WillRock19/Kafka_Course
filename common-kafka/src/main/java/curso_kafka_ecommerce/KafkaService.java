@@ -63,7 +63,7 @@ class KafkaService<T> implements Closeable
 							
 							/* The deadletter might throw an exception. In this program, we are taking the approach that,
 							 * if that ever happens, we'll throw the exception and stop all the functionalities, because
-							 * something terribly wrong whould have happened
+							 * something terribly wrong would have happened
 							 */
 							deadLetterDispatcher.send(
 									"ECOMMERCE_DEADLETTER", 

@@ -294,7 +294,8 @@
 *				because, for him, it's already send it; his part in this negotiation is over.
 *
 *				If you open our KafkaService, you'll see, in the method run, that we catch any exceptions and print it to the console. Nice.
-*				We could use this catch to dispatch a new message, a message to a service that will only work with errors. The most common
-*				way to call that type of messages is 'dead letters".
+*				We could use this catch to dispatch a new message, a message that'll tell the develops that an error occur while a message
+*				was being consumed (or, even better, we could create a service to deal specifically with that message). The most common way 
+*				to call that type of messages is "dead letters".
 *
 *			So, let's begin this class by changing the catch from our KafkaService's run method.
