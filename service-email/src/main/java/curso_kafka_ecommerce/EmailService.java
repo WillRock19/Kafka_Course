@@ -1,12 +1,14 @@
 package curso_kafka_ecommerce;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 public class EmailService {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException, ExecutionException, IOException {
 		var emailService = new EmailService();
 		
 		try(var service = new KafkaService<>(

@@ -1,5 +1,6 @@
 package curso_kafka_ecommerce;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
@@ -12,7 +13,7 @@ public class FraudDetectorService {
 
 	private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<Order>();
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException, ExecutionException, IOException {
 		var fraudService = new FraudDetectorService();
 		
 		try(var service = new KafkaService<>(

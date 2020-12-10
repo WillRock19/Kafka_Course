@@ -1,6 +1,8 @@
 package curso_kafka_ecommerce;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -9,7 +11,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 
 public class LogService 
 {
-	public static void main(String[] args) 
+	public static void main(String[] args) throws InterruptedException, ExecutionException, IOException 
 	{
 		var logService = new LogService();
 		

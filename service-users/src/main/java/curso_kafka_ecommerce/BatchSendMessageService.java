@@ -1,5 +1,6 @@
 package curso_kafka_ecommerce;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -21,7 +22,7 @@ public class BatchSendMessageService {
 		createUsersTable();
 	}
 	
-	public static void main(String[] args) throws SQLException {
+	public static void main(String[] args) throws SQLException, InterruptedException, ExecutionException, IOException {
 		var batchService = new BatchSendMessageService();
 		
 		try(var service = new KafkaService<>(

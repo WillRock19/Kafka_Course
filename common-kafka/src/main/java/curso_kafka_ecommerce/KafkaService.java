@@ -1,6 +1,7 @@
 package curso_kafka_ecommerce;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
@@ -14,11 +15,12 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 import curso_kafka.services.GsonDeserializer;
+import curso_kafka.services.GsonSerializer;
 
 class KafkaService<T> implements Closeable
 {
 	private final KafkaConsumer<String, Message<T>> consumer;
-	private final IConsumerFunction consumerFunction;
+	private final IConsumerFunction<T> consumerFunction;
 
 	KafkaService(String groupId, String topic, IConsumerFunction<T> consumerFunction, Map<String, String> extraPropertiesToUse) 
 	{
@@ -37,28 +39,42 @@ class KafkaService<T> implements Closeable
 		this.consumer = new KafkaConsumer<String, Message<T>>(produceProperties(groupId, extraPropertiesToUse));
 	}
 
-	void run() 
+	void run() throws InterruptedException, ExecutionException, IOException 
 	{
-		while(true) 
+		try(var deadLetterDispatcher = new KafkaDispatcher<>())
 		{
-			//Defining the amount of time the subscriber will be looking for a data inside Kafka before proceed code execution
-			var records = consumer.poll(Duration.ofMillis(100));
-			
-			if(!records.isEmpty()) {
-				System.out.println("Founded " + records.count() + " registers!");
+			while(true) 
+			{
+				//Defining the amount of time the subscriber will be looking for a data inside Kafka before proceed code execution
+				var records = consumer.poll(Duration.ofMillis(100));
 				
-				for(var record : records) 
-				{
-					try {
-						consumerFunction.consume(record);
-					} 
-					catch (Exception e) {
-						//We'll threat the consume exception as a log for now
-						e.printStackTrace();
+				if(!records.isEmpty()) {
+					System.out.println("Founded " + records.count() + " registers!");
+					
+					for(var record : records) 
+					{
+						try {
+							consumerFunction.consume(record);
+						} 
+						catch (Exception e) {
+							e.printStackTrace();
+							
+							var messageConsumed = record.value();
+							
+							/* The deadletter might throw an exception. In this program, we are taking the approach that,
+							 * if that ever happens, we'll throw the exception and stop all the functionalities, because
+							 * something terribly wrong whould have happened
+							 */
+							deadLetterDispatcher.send(
+									"ECOMMERCE_DEADLETTER", 
+									messageConsumed.getCorrelationId().toString(), 
+									messageConsumed.getCorrelationId().continueWith("Deadletter"),
+									new GsonSerializer().serialize("", messageConsumed));
+						}
 					}
 				}
-			}
-		}	
+			}	
+		}
 	}
 	
 	@Override
