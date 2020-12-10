@@ -225,7 +225,7 @@
 *	
 *		When we create the KafkaService (our wrapper to a KafkaConsumer), we use some properties. 
 *
-*		1. The .poll() and rebalance
+*		A. The .poll() and rebalance
 *			
 *			The poll() property, basically, tells to the server "Hey, I'm alive in here. Got something for me?" and wait for the answer
 *			in the specified interval.
@@ -243,9 +243,12 @@
 *
 *			So we usually use a default configuration of "records to be consumed before the poll() returns" as 1.
 *
-*		2. Heartbeat and rebalance	
+*		B. Heartbeat and rebalance	
 *
 *			There's another concept called heartbeat, where a consumer tells the consumer its alive too. When the hearthbeat stops, the server
 *			understands that the consumer is down and then trigger a rebalance of partitions.
 *
-*		
+*
+*	
+*
+*
