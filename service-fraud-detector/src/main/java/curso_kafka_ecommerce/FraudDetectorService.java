@@ -19,7 +19,6 @@ public class FraudDetectorService {
 				FraudDetectorService.class.getTypeName(), 
 				"ECOMMERCE_NEW_ORDER",  
 				fraudService::parseRecord,
-				Order.class,
 				new HashMap<>()))
 		{
 			service.run();

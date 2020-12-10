@@ -20,21 +20,21 @@ class KafkaService<T> implements Closeable
 	private final KafkaConsumer<String, Message<T>> consumer;
 	private final IConsumerFunction consumerFunction;
 
-	KafkaService(String groupId, String topic, IConsumerFunction<T> consumerFunction, Class<T> type, Map<String, String> extraPropertiesToUse) 
+	KafkaService(String groupId, String topic, IConsumerFunction<T> consumerFunction, Map<String, String> extraPropertiesToUse) 
 	{
-		this(groupId, consumerFunction, type, extraPropertiesToUse);	
+		this(groupId, consumerFunction, extraPropertiesToUse);	
 		consumer.subscribe(Collections.singletonList(topic));
 	}
 
-	KafkaService(String groupId, Pattern topic, IConsumerFunction<T> consumerFunction, Class<T> type, Map<String, String> extraPropertiesToUse) {
-		this(groupId, consumerFunction, type, extraPropertiesToUse);
+	KafkaService(String groupId, Pattern topic, IConsumerFunction<T> consumerFunction, Map<String, String> extraPropertiesToUse) {
+		this(groupId, consumerFunction, extraPropertiesToUse);
 		consumer.subscribe(topic);
 	}
 
-	private KafkaService(String groupId, IConsumerFunction<T> consumerFunction, Class<T> type, Map<String, String> extraPropertiesToUse) 
+	private KafkaService(String groupId, IConsumerFunction<T> consumerFunction, Map<String, String> extraPropertiesToUse) 
 	{
 		this.consumerFunction = consumerFunction;
-		this.consumer = new KafkaConsumer<String, Message<T>>(produceProperties(groupId, type, extraPropertiesToUse));
+		this.consumer = new KafkaConsumer<String, Message<T>>(produceProperties(groupId, extraPropertiesToUse));
 	}
 
 	void run() 
@@ -66,7 +66,7 @@ class KafkaService<T> implements Closeable
 		this.consumer.close();
 	}
 	
-	private Properties produceProperties(String groupID, Class<T> type, Map<String, String> extraPropertiesToUse) 
+	private Properties produceProperties(String groupID, Map<String, String> extraPropertiesToUse) 
 	{
 		var properties = new Properties();
 		
@@ -77,6 +77,8 @@ class KafkaService<T> implements Closeable
 		
 		properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupID);
 		properties.setProperty(ConsumerConfig.CLIENT_ID_CONFIG, UUID.randomUUID().toString());	
+		
+		properties.setProperty(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
 		
 		properties.putAll(extraPropertiesToUse);
 		

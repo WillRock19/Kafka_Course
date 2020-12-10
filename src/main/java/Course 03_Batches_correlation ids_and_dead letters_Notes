@@ -116,29 +116,30 @@
 *
 *		Execute two commands in two different tabs:
 *
-*									.\kafka-topics.bat --describe --bootstrap-server localhost:9092
+*												.\kafka-topics.bat --describe --bootstrap-server localhost:9092
 *
-*			
+*									.\kafka-consumer-groups.bat --all-groups --bootstrap-server localhost:9091 --describe
 *	
+*
 *		Let's analyze the info they give one by one. First, Kafka-topics:						
 *
-Topic: ECOMMERCE_USER_GENERATE_READING_REPORT   PartitionCount: 3       ReplicationFactor: 3    Configs: segment.bytes=1073741824
-        Topic: ECOMMERCE_USER_GENERATE_READING_REPORT   Partition: 0    Leader: 1       Replicas: 1,3,4 Isr: 4,1,3
-        Topic: ECOMMERCE_USER_GENERATE_READING_REPORT   Partition: 1    Leader: 2       Replicas: 2,4,1 Isr: 4,1,2
-        Topic: ECOMMERCE_USER_GENERATE_READING_REPORT   Partition: 2    Leader: 3       Replicas: 3,1,2 Isr: 3,1,2
-        
-Topic: ECOMMERCE_SEND_EMAIL     PartitionCount: 3       ReplicationFactor: 3    Configs: segment.bytes=1073741824
-        Topic: ECOMMERCE_SEND_EMAIL     Partition: 0    Leader: 4       Replicas: 4,1,2 Isr: 4,2,1
-        Topic: ECOMMERCE_SEND_EMAIL     Partition: 1    Leader: 1       Replicas: 1,2,3 Isr: 3,1,2
-        Topic: ECOMMERCE_SEND_EMAIL     Partition: 2    Leader: 2       Replicas: 2,3,4 Isr: 4,3,2
+* Topic: ECOMMERCE_USER_GENERATE_READING_REPORT   PartitionCount: 3       ReplicationFactor: 3    Configs: segment.bytes=1073741824
+*         Topic: ECOMMERCE_USER_GENERATE_READING_REPORT   Partition: 0    Leader: 1       Replicas: 1,3,4 Isr: 4,1,3
+*         Topic: ECOMMERCE_USER_GENERATE_READING_REPORT   Partition: 1    Leader: 2       Replicas: 2,4,1 Isr: 4,1,2
+*         Topic: ECOMMERCE_USER_GENERATE_READING_REPORT   Partition: 2    Leader: 3       Replicas: 3,1,2 Isr: 3,1,2
+*         
+* Topic: ECOMMERCE_SEND_EMAIL     PartitionCount: 3       ReplicationFactor: 3    Configs: segment.bytes=1073741824
+*         Topic: ECOMMERCE_SEND_EMAIL     Partition: 0    Leader: 4       Replicas: 4,1,2 Isr: 4,2,1
+*         Topic: ECOMMERCE_SEND_EMAIL     Partition: 1    Leader: 1       Replicas: 1,2,3 Isr: 3,1,2
+*         Topic: ECOMMERCE_SEND_EMAIL     Partition: 2    Leader: 2       Replicas: 2,3,4 Isr: 4,3,2
 *
 *       											...
 *
-Topic: __consumer_offsets       PartitionCount: 50      ReplicationFactor: 3    Configs: compression.type=producer,cleanup.policy=compact,segment.bytes=104857600
-        Topic: __consumer_offsets       Partition: 0    Leader: 4       Replicas: 4,1,2 Isr: 4,2,1
-        Topic: __consumer_offsets       Partition: 1    Leader: 1       Replicas: 1,2,3 Isr: 3,1,2
-        Topic: __consumer_offsets       Partition: 2    Leader: 2       Replicas: 2,3,4 Isr: 4,3,2
-        Topic: __consumer_offsets       Partition: 3    Leader: 3       Replicas: 3,4,1 Isr: 4,1,3
+* Topic: __consumer_offsets       PartitionCount: 50      ReplicationFactor: 3    Configs: compression.type=producer,cleanup.policy=compact,segment.bytes=104857600
+*         Topic: __consumer_offsets       Partition: 0    Leader: 4       Replicas: 4,1,2 Isr: 4,2,1
+*         Topic: __consumer_offsets       Partition: 1    Leader: 1       Replicas: 1,2,3 Isr: 3,1,2
+*         Topic: __consumer_offsets       Partition: 2    Leader: 2       Replicas: 2,3,4 Isr: 4,3,2
+*         Topic: __consumer_offsets       Partition: 3    Leader: 3       Replicas: 3,4,1 Isr: 4,1,3
 *
 *
 *       											...
@@ -157,4 +158,94 @@ Topic: __consumer_offsets       PartitionCount: 50      ReplicationFactor: 3    
 *		The "__consumer_offsets" shows some information about the offsets (messages generated) of each consumer in relation to each of the topics. 
 *
 *
+*		Now, let's talk about the info we received with kafka-consumer-groups.
 *
+* GROUP           							  	TOPIC                					PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG    	CONSUMER-ID                                                               		HOST            CLIENT-ID
+* EmailService    							  	ECOMMERCE_SEND_EMAIL 					0          0               0               0      	bd02c8eb-d3d8-45df-81c3-a09245852c53-c166c8cb-bf3f-49ce-ad94-39721ee094e3 /192.168.0.11   bd02c8eb-d3d8-45df-81c3-a09245852c53
+* EmailService    							  	ECOMMERCE_SEND_EMAIL 					1          1               1               0      	bd02c8eb-d3d8-45df-81c3-a09245852c53-c166c8cb-bf3f-49ce-ad94-39721ee094e3 /192.168.0.11   bd02c8eb-d3d8-45df-81c3-a09245852c53
+* EmailService    							  	ECOMMERCE_SEND_EMAIL 					2          1               1               0      	bd02c8eb-d3d8-45df-81c3-a09245852c53-c166c8cb-bf3f-49ce-ad94-39721ee094e3 /192.168.0.11   bd02c8eb-d3d8-45df-81c3-a09245852c53
+* 											  											
+* GROUP           							  	TOPIC                                  	PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG    	CONSUMER-ID		               													HOST            CLIENT-ID
+* 											  												
+* LogService      							  	ECOMMERCE_USER_GENERATE_READING_REPORT 	2          0               0               0      	00588266-e4e0-458f-a39f-de183bcf9870-44064dfe-33de-464e-8655-19a00a773c8b /192.168.0.11   00588266-e4e0-458f-a39f-de183bcf9870
+* LogService      							  	ECOMMERCE_SEND_EMAIL                   	0          0               0               0      	00588266-e4e0-458f-a39f-de183bcf9870-44064dfe-33de-464e-8655-19a00a773c8b /192.168.0.11   00588266-e4e0-458f-a39f-de183bcf9870
+* LogService      							  	ECOMMERCE_NEW_ORDER                    	0          0               0               0      	00588266-e4e0-458f-a39f-de183bcf9870-44064dfe-33de-464e-8655-19a00a773c8b /192.168.0.11   00588266-e4e0-458f-a39f-de183bcf9870
+* LogService      							  	ECOMMERCE_SEND_MESSAGE_TO_ALL_USERS    	2          0               0               0      	00588266-e4e0-458f-a39f-de183bcf9870-44064dfe-33de-464e-8655-19a00a773c8b /192.168.0.11   00588266-e4e0-458f-a39f-de183bcf9870
+* LogService      							  	ECOMMERCE_USER_GENERATE_READING_REPORT 	1          0               0               0      	00588266-e4e0-458f-a39f-de183bcf9870-44064dfe-33de-464e-8655-19a00a773c8b /192.168.0.11   00588266-e4e0-458f-a39f-de183bcf9870
+* 											  												
+* LogService      							  	ECOMMERCE_SEND_EMAIL                   	1          1               1               0      	00588266-e4e0-458f-a39f-de183bcf9870-44064dfe-33de-464e-8655-19a00a773c8b /192.168.0.11   00588266-e4e0-458f-a39f-de183bcf9870
+* LogService      							  	ECOMMERCE_USER_GENERATE_READING_REPORT 	0          4               4               0      	00588266-e4e0-458f-a39f-de183bcf9870-44064dfe-33de-464e-8655-19a00a773c8b /192.168.0.11   00588266-e4e0-458f-a39f-de183bcf9870
+* LogService      							  	ECOMMERCE_SEND_EMAIL                   	2          1               1               0      	00588266-e4e0-458f-a39f-de183bcf9870-44064dfe-33de-464e-8655-19a00a773c8b /192.168.0.11   00588266-e4e0-458f-a39f-de183bcf9870
+* LogService      							  	ECOMMERCE_NEW_ORDER                    	1          1               1               0      	00588266-e4e0-458f-a39f-de183bcf9870-44064dfe-33de-464e-8655-19a00a773c8b /192.168.0.11   00588266-e4e0-458f-a39f-de183bcf9870
+* LogService      							  	ECOMMERCE_NEW_ORDER                    	2          1               1               0      	00588266-e4e0-458f-a39f-de183bcf9870-44064dfe-33de-464e-8655-19a00a773c8b /192.168.0.11   00588266-e4e0-458f-a39f-de183bcf9870
+* LogService      							  	ECOMMERCE_SEND_MESSAGE_TO_ALL_USERS    	0          0               0               0      	00588266-e4e0-458f-a39f-de183bcf9870-44064dfe-33de-464e-8655-19a00a773c8b /192.168.0.11   00588266-e4e0-458f-a39f-de183bcf9870
+* LogService      							  	ECOMMERCE_SEND_MESSAGE_TO_ALL_USERS    	1          6               6               0      	00588266-e4e0-458f-a39f-de183bcf9870-44064dfe-33de-464e-8655-19a00a773c8b /192.168.0.11   00588266-e4e0-458f-a39f-de183bcf9870
+* 
+* GROUP                                         TOPIC                                 	PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG    	CONSUMER-ID                                										HOST            CLIENT-ID
+* 																						
+* curso_kafka_ecommerce.BatchSendMessageService ECOMMERCE_SEND_MESSAGE_TO_ALL_USERS   	0          0               0               0      	db248dc6-fd90-4ec7-b286-41ea67a51a24-910cc981-c2df-4330-93d0-3da3f31ea913 /192.168.0.11   db248dc6-fd90-4ec7-b286-41ea67a51a24
+* curso_kafka_ecommerce.BatchSendMessageService ECOMMERCE_SEND_MESSAGE_TO_ALL_USERS   	1          6               6               0      	db248dc6-fd90-4ec7-b286-41ea67a51a24-910cc981-c2df-4330-93d0-3da3f31ea913 /192.168.0.11   db248dc6-fd90-4ec7-b286-41ea67a51a24
+* curso_kafka_ecommerce.BatchSendMessageService ECOMMERCE_SEND_MESSAGE_TO_ALL_USERS   	2          0               0               0      	db248dc6-fd90-4ec7-b286-41ea67a51a24-910cc981-c2df-4330-93d0-3da3f31ea913 /192.168.0.11   db248dc6-fd90-4ec7-b286-41ea67a51a24
+* curso_kafka_ecommerce.BatchSendMessageService SEND_MESSAGE_TO_ALL_USERS             	2          0               0               0      	-
+*                                           -               -						    	
+* curso_kafka_ecommerce.BatchSendMessageService SEND_MESSAGE_TO_ALL_USERS             	1          0               0               0      	-
+*                                           -               -						    	
+* curso_kafka_ecommerce.BatchSendMessageService SEND_MESSAGE_TO_ALL_USERS             	0          11              11              0      	-
+*                                           -               -                         	
+* 																						
+* Consumer group 'curso_kafka_ecommerce.CreateUserService' has no active members.     	
+* 																						
+* GROUP                                   	   	TOPIC               					PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG        CONSUMER-ID     																HOST            CLIENT-ID
+* curso_kafka_ecommerce.CreateUserService 	   	ECOMMERCE_NEW_ORDER 					2          1               1               0          -               																-               -
+* curso_kafka_ecommerce.CreateUserService 	   	ECOMMERCE_NEW_ORDER 					1          1               1               0          -               																-               -
+* curso_kafka_ecommerce.CreateUserService 	   	ECOMMERCE_NEW_ORDER 					0          0               0               0          -               																-               -
+* 																
+* GROUP                                      	TOPIC               					PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG        CONSUMER-ID	                       											HOST            CLIENT-ID
+* 											                                                                                                  
+* curso_kafka_ecommerce.FraudDetectorService 	ECOMMERCE_NEW_ORDER 					0          0               0               0          c1acbef7-9208-4289-a093-4b3303bacbe5-119b95e8-60b0-4a43-bc1c-4daedbeeaee1 /192.168.0.11   c1acbef7-9208-4289-a093-4b3303bacbe5
+* curso_kafka_ecommerce.FraudDetectorService 	ECOMMERCE_NEW_ORDER 					1          1               1               0          c1acbef7-9208-4289-a093-4b3303bacbe5-119b95e8-60b0-4a43-bc1c-4daedbeeaee1 /192.168.0.11   c1acbef7-9208-4289-a093-4b3303bacbe5
+*
+* 																											...
+*	
+*		The consumer groups shows all those groups. Remember: for each service, we created a different group, so you can see, for instance, that the 
+*		BatchSendMessageService is listening to the topic ECOMMERCE_SEND_MESSAGE_TO_ALL_USERS in the Partitions 0, 1 and 2. The Client-Id represents
+*		the consumer identification.
+*
+*		Note also that the BatchSendMessage does not have any info for the topic SEND_MESSAGE_TO_ALL_USERS. That's because that consumer USED to listen
+*		to that topic, but we've stopped it and changed the topic... so the info shows as you see.
+*
+*
+*			Current-offset: shows the number of messages that the broker read for that partition;
+*
+*			Log-end-offset: shows the number of messages that are to read in a giving partition (the total amount);
+*		
+*		With the info above, we can see if we all the messages where processed or something still missing. Cool, right?
+*	
+*		Now, let's talk about the consumer properties.
+*	
+*		When we create the KafkaService (our wrapper to a KafkaConsumer), we use some properties. 
+*
+*		1. The .poll() and rebalance
+*			
+*			The poll() property, basically, tells to the server "Hey, I'm alive in here. Got something for me?" and wait for the answer
+*			in the specified interval.
+*
+*			So, it have a part to play in the the rebalance. When another instance of a specific consumer gets up, it warns Kafka that it's alive,
+*			and Kafka, in his turn, rebalances the full application so it can use the new consumer in a given partition.
+*
+*			The rebalance will only happen when the server is communication with the consumers. A consumer that already exists doesn't know another
+*			one is up, so the new one always have to tell the server that it got up. So a frequent .poll() helps to tell the server faster that a 
+*			new instance is up.
+*
+*			The poll returns a number of records from Kafka, and we can define the max number it will returns. The higher the number of messages 
+*			we're going to return from the poll, the higher the chance something goes wrong while those messages are processed and something goes
+*			wrong without we knowing.
+*
+*			So we usually use a default configuration of "records to be consumed before the poll() returns" as 1.
+*
+*		2. Heartbeat and rebalance	
+*
+*			There's another concept called heartbeat, where a consumer tells the consumer its alive too. When the hearthbeat stops, the server
+*			understands that the consumer is down and then trigger a rebalance of partitions.
+*
+*		

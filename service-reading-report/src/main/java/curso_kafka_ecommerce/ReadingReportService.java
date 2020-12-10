@@ -20,7 +20,6 @@ public class ReadingReportService {
 				ReadingReportService.class.getTypeName(), 
 				"ECOMMERCE_USER_GENERATE_READING_REPORT",  
 				readingReportService::parseRecord,
-				User.class,
 				new HashMap<>()))
 		{
 			service.run();

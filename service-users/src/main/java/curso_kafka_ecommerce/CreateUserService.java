@@ -27,7 +27,6 @@ public class CreateUserService {
 				CreateUserService.class.getTypeName(), 
 				"ECOMMERCE_NEW_ORDER",  
 				createUserService::parseRecord,
-				Order.class,
 				new HashMap<>()))
 		{
 			service.run();

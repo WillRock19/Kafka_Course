@@ -13,7 +13,6 @@ public class EmailService {
 				EmailService.class.getSimpleName(), 
 				"ECOMMERCE_SEND_EMAIL", 
 				emailService::parseRecord,
-				String.class,
 				Map.of()))
 		{
 			service.run();
