@@ -9,22 +9,22 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import curso_kafka.consumer.KafkaService;
 import curso_kafka.dispatcher.Message;
 
-public class EmailService {
+public class EmailService implements ConsumerService<String> {
 
-	public static void main(String[] args) throws InterruptedException, ExecutionException, IOException {
-		var emailService = new EmailService();
-		
-		try(var service = new KafkaService<>(
-				EmailService.class.getSimpleName(), 
-				"ECOMMERCE_SEND_EMAIL", 
-				emailService::parseRecord,
-				Map.of()))
-		{
-			service.run();
-		}
+	public static void main(String[] args) throws InterruptedException, ExecutionException, IOException 
+	{
+		new ServiceProvider().run(EmailService::new);
+	}
+	
+	public String getTopic() {
+		return "ECOMMERCE_SEND_EMAIL";
+	}
+	
+	public String getConsumerGroup() {
+		return EmailService.class.getSimpleName();
 	}
 
-	private void parseRecord(ConsumerRecord<String, Message<String>> record) 
+	public void parseRecord(ConsumerRecord<String, Message<String>> record) 
 	{
 		System.out.println("--------------------------------------------");
 		System.out.println("Sending email...");

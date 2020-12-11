@@ -58,5 +58,9 @@
 *
 *			Well.. how are we going to deal with this?
 *
-*				In this project, we are not going to share the Kafka consumer in multi threads... instead, we are going to create
-*				one instance of service-email per thread (so each thread will got it's own consumer).	
+*				In this project, we are not going to share the Kafka consumer in multi-threads... instead, we are going to create
+*				one instance of service-email per thread (so each thread will got it's own consumer).
+*
+*
+*		We are going to start by refactoring our email service, allowing it to be used as a service like it should be. You can see
+*		in this comment how we are going to do it.
