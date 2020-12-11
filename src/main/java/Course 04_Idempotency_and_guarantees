@@ -40,4 +40,23 @@
 *
 * 														CLASS 02_The service layer
 *
+*	A. Executing services in the same process
 *
+*		Currently, if we want to run two instances at the same time, we need to run it manually. Each of the instances will be
+*		run in it's own process. But there are situations where we might want to execute 10 e-mail services inside the same
+*		process on own JVM (in other words, execute the instances in different threads).
+*
+*			This would make the startup's loading higher
+*
+*		So, in this class we going to start preparing the email service for this  First, but not least, we need to see if the
+*		email has any state that it shares with it's methods. The problem is: it uses the KafkaService, that has a internal
+*		state.
+*
+*		So, we need to see in the Kafka's docs if the Consumer and the Producer are thread safe. We can see that the producer
+*		is... but the consume isn't. In its documentation, Kafka tells us how to deal with this situation and execute a consumer
+*		in different threads. 
+*
+*			Well.. how are we going to deal with this?
+*
+*				In this project, we are not going to share the Kafka consumer in multi threads... instead, we are going to create
+*				one instance of service-email per thread (so each thread will got it's own consumer).	
