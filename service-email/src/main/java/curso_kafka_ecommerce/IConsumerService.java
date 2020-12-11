@@ -4,7 +4,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import curso_kafka.dispatcher.Message;
 
-public interface ConsumerService<T> 
+public interface IConsumerService<T> 
 {
 	String getTopic();
 	String getConsumerGroup();

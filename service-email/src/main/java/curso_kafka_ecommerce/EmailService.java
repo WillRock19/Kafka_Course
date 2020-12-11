@@ -7,7 +7,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import curso_kafka.dispatcher.Message;
 
-public class EmailService implements ConsumerService<String> {
+public class EmailService implements IConsumerService<String> {
 
 	public static void main(String[] args) throws InterruptedException, ExecutionException, IOException 
 	{

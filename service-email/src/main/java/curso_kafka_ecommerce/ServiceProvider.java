@@ -18,10 +18,10 @@ public class ServiceProvider<T> implements Callable<Void> {
 	
 	public Void call() throws InterruptedException, ExecutionException, IOException 
 	{
-		var myService = factory.create();
+		var serviceToRun = factory.create();
 		
-		try(var kafkaService = new KafkaService<>(myService.getTopic(), myService.getConsumerGroup(), 
-												  myService::parseRecord, Map.of()))
+		try(var kafkaService = new KafkaService<>(serviceToRun.getTopic(), serviceToRun.getConsumerGroup(), 
+												  serviceToRun::parseRecord, Map.of()))
 		{
 			kafkaService.run();
 		}
