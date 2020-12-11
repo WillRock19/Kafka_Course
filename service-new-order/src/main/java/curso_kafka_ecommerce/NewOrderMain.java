@@ -15,21 +15,16 @@ public class NewOrderMain {
 	{
 		try(var orderDispatcher = new KafkaDispatcher<Order>())
 		{
-			try(var emailDispatcher = new KafkaDispatcher<String>())
+			for(var i = 0; i < 10; i++) 
 			{
-				for(var i = 0; i < 10; i++) 
-				{
-					var orderId = UUID.randomUUID().toString();
-					var amount = new BigDecimal(Math.random() * 5000 + 1);
-					var userEmail = Math.random() + "@email.com";
-					
-					var order = new Order(orderId, amount, userEmail);
-					var emailMessage = "Be welcome! We are processing your order :)";
-					var correlationId = new CorrelationId(NewOrderMain.class.getName());
-					
-					orderDispatcher.send("ECOMMERCE_NEW_ORDER", userEmail, correlationId, order);
-					emailDispatcher.send("ECOMMERCE_SEND_EMAIL", userEmail, correlationId, emailMessage);
-				}
+				var orderId = UUID.randomUUID().toString();
+				var amount = new BigDecimal(Math.random() * 5000 + 1);
+				var userEmail = Math.random() + "@email.com";
+				
+				var order = new Order(orderId, amount, userEmail);
+				var correlationId = new CorrelationId(NewOrderMain.class.getName());
+				
+				orderDispatcher.send("ECOMMERCE_NEW_ORDER", userEmail, correlationId, order);
 			}
 		}	
 	}

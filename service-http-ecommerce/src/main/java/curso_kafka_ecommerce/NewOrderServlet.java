@@ -17,7 +17,6 @@ import curso_kafka.models.Order;
 public class NewOrderServlet extends HttpServlet {
 
 	private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<>();
-	private final KafkaDispatcher<String> emailDispatcher = new KafkaDispatcher<>();
 
 	@Override
 	public void destroy() 
@@ -25,7 +24,6 @@ public class NewOrderServlet extends HttpServlet {
 		super.destroy();
 		try {
 			orderDispatcher.close();
-			emailDispatcher.close();
 		} 
 		catch (IOException e) {
 			e.printStackTrace();
@@ -39,12 +37,9 @@ public class NewOrderServlet extends HttpServlet {
 			var orderId = UUID.randomUUID().toString();
 			var amount = new BigDecimal(req.getParameter("amount"));				
 			var userEmail = req.getParameter("email");
-			
 			var order = new Order(orderId, amount, userEmail);
-			var emailMessage = "Be welcome! We are processing your order :)";
 
 			orderDispatcher.send("ECOMMERCE_NEW_ORDER", userEmail, new CorrelationId(NewOrderServlet.class.getSimpleName()), order);
-			emailDispatcher.send("ECOMMERCE_SEND_EMAIL", userEmail, new CorrelationId(NewOrderServlet.class.getSimpleName()), emailMessage);
 			
 			System.out.println("New order sent successfuly");
 			

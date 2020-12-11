@@ -34,4 +34,5 @@
 *					which will be responsible to create an e-mail that our service-new-order is currently creating by dispatching
 *					the event in it's main.
 *
-*
+*						Another advantage of this approach is that we're going to apply the Fast Delegate to the e-mail generation,
+*						which is incredible!!!
