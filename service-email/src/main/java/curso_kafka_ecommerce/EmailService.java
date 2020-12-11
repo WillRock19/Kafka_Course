@@ -1,19 +1,17 @@
 package curso_kafka_ecommerce;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import curso_kafka.consumer.KafkaService;
 import curso_kafka.dispatcher.Message;
 
 public class EmailService implements ConsumerService<String> {
 
 	public static void main(String[] args) throws InterruptedException, ExecutionException, IOException 
 	{
-		new ServiceProvider().run(EmailService::new);
+		new ServiceProvider<>(EmailService::new).call();
 	}
 	
 	public String getTopic() {

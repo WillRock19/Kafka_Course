@@ -2,13 +2,21 @@ package curso_kafka_ecommerce;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 import curso_kafka.consumer.KafkaService;
 
-public class ServiceProvider {
+public class ServiceProvider<T> implements Callable<Void> {
 
-	public <T> void run(IServiceFactory<T> factory) throws InterruptedException, ExecutionException, IOException 
+	private final IServiceFactory<T> factory;
+	
+	public ServiceProvider(IServiceFactory<T> factory) 
+	{
+		this.factory = factory;
+	}
+	
+	public Void call() throws InterruptedException, ExecutionException, IOException 
 	{
 		var myService = factory.create();
 		
@@ -16,7 +24,8 @@ public class ServiceProvider {
 												  myService::parseRecord, Map.of()))
 		{
 			kafkaService.run();
-		}	
+		}
+		
+		return null;
 	}
-
 }

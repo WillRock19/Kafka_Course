@@ -40,7 +40,7 @@
 *
 * 														CLASS 02_The service layer
 *
-*	A. Executing services in the same process
+*	A. Extracting the KafkaService generation to a layer of services
 *
 *		Currently, if we want to run two instances at the same time, we need to run it manually. Each of the instances will be
 *		run in it's own process. But there are situations where we might want to execute 10 e-mail services inside the same
@@ -64,3 +64,15 @@
 *
 *		We are going to start by refactoring our email service, allowing it to be used as a service like it should be. You can see
 *		in this comment how we are going to do it.
+*
+*
+*	B. Parallelizing with threads's pools
+*
+*		Now that we've refactored our service-email, we can start to run it in multiple threads.
+*
+*		We have now the serviceProvider() function. We want it yo be called 10 times. One approach would be make it implement the runnable
+*		interface. But we are not going to do this.
+*
+*		We want to call that function N times, so we make it implements a callable of type void (because it'll never return anything).
+*
+*		
