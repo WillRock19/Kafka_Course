@@ -1,8 +1,37 @@
 *
 * 												CLASS 01_Organization and e-mail services
 * 
-* 	Let's start this class refactoring our common-kafka, separating all the classes that works with the consumer and 
-*	the ones that work with dispatchers in different packages.
+*	A. Reorganizing our project
+*
+*	 	Let's start this class refactoring our common-kafka, separating all the classes that works with the consumer and 
+*		the ones that work with dispatchers in different packages.
 * 
+*		Then, let's talk about the e-mail service. Do we really need a service for that? Couldn't be just a library? Course
+*		it could. The difficult whould be that the e-mail is an external system, and the way we'll communicate with it is 
+*		important.
+*
+*
+*	B. Discussing the e-mail service
+*
+*		Imagine that we've used the e-mail as a common library, as we're using the common-kafka. Now, I want to change the
+*		way the e-mail is generated from using Azure to AWS. If the e-mail is just a library, every service that implements
+*		it must migrate at same time BEFORE I can start use the new way, which creates a depedency between all the services
+*		and the library.
+*
+*		That's a problem, a really bad one. Using a service, we can avoid that kind of problem, making the evolution of the
+*		email something detached from the other services.
+*
+*		Still, there's something to consider: the way we're working right now, the e-mail text will be generated inside each
+*		service that sends the message to the dispatcher. What if we wanted something greater? Or, thinking in another way:
+*		what if we want to send an attachment in our e-mail? How could we deal with specific situations using something as
+*		generic as the e-mail service?
+*
+*			Answer: we could create other, more specific services, to work as middle man in those situations and make the
+*					specific configurations happen for us. Awesome, huh? The magic of microservices coming to life with
+*					kafka.
+*
+*					To show this approach, we're going to create a little, tiny bit of program called service-email-new-order,
+*					which will be responsible to create an e-mail that our service-new-order is currently creating by dispatching
+*					the event in it's main.
 *
 *
