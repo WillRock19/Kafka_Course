@@ -9,13 +9,16 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
+import curso_kafka.consumer.KafkaService;
+import curso_kafka.dispatcher.Message;
+
 public class LogService 
 {
 	public static void main(String[] args) throws InterruptedException, ExecutionException, IOException 
 	{
 		var logService = new LogService();
 		
-		try(var service = new KafkaService<>(
+		try(var service = new KafkaService<String>(
 				LogService.class.getSimpleName(), 
 				Pattern.compile("ECOMMERCE.*"), 
 				logService::parseRecord,

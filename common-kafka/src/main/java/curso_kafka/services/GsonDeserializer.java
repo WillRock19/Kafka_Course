@@ -5,7 +5,7 @@ import org.apache.kafka.common.serialization.Deserializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import curso_kafka_ecommerce.Message;
+import curso_kafka.dispatcher.Message;
 
 public class GsonDeserializer implements Deserializer<Message> 
 {	

@@ -1,5 +1,8 @@
 *
 * 												CLASS 01_Organization and e-mail services
 * 
+* 	Let's start this class refactoring our common-kafka, separating all the classes that works with the consumer and 
+*	the ones that work with dispatchers in different packages.
 * 
-* 
+*
+*

@@ -5,7 +5,7 @@ import org.apache.kafka.common.serialization.Serializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import curso_kafka_ecommerce.Message;
+import curso_kafka.dispatcher.Message;
 
 //To be able to use this serializer with Kafka, we need to implement the Kafka's serializer interface
 public class GsonSerializer<T> implements Serializer<T> 

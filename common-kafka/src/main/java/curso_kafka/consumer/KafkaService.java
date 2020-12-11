@@ -1,4 +1,4 @@
-package curso_kafka_ecommerce;
+package curso_kafka.consumer;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -14,21 +14,23 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
+import curso_kafka.dispatcher.KafkaDispatcher;
+import curso_kafka.dispatcher.Message;
 import curso_kafka.services.GsonDeserializer;
 import curso_kafka.services.GsonSerializer;
 
-class KafkaService<T> implements Closeable
+public class KafkaService<T> implements Closeable
 {
 	private final KafkaConsumer<String, Message<T>> consumer;
 	private final IConsumerFunction<T> consumerFunction;
 
-	KafkaService(String groupId, String topic, IConsumerFunction<T> consumerFunction, Map<String, String> extraPropertiesToUse) 
+	public KafkaService(String groupId, String topic, IConsumerFunction<T> consumerFunction, Map<String, String> extraPropertiesToUse) 
 	{
 		this(groupId, consumerFunction, extraPropertiesToUse);	
 		consumer.subscribe(Collections.singletonList(topic));
 	}
 
-	KafkaService(String groupId, Pattern topic, IConsumerFunction<T> consumerFunction, Map<String, String> extraPropertiesToUse) {
+	public KafkaService(String groupId, Pattern topic, IConsumerFunction<T> consumerFunction, Map<String, String> extraPropertiesToUse) {
 		this(groupId, consumerFunction, extraPropertiesToUse);
 		consumer.subscribe(topic);
 	}
@@ -39,7 +41,7 @@ class KafkaService<T> implements Closeable
 		this.consumer = new KafkaConsumer<String, Message<T>>(produceProperties(groupId, extraPropertiesToUse));
 	}
 
-	void run() throws InterruptedException, ExecutionException, IOException 
+	public void run() throws InterruptedException, ExecutionException, IOException 
 	{
 		try(var deadLetterDispatcher = new KafkaDispatcher<>())
 		{
@@ -61,10 +63,6 @@ class KafkaService<T> implements Closeable
 							
 							var messageConsumed = record.value();
 							
-							/* The deadletter might throw an exception. In this program, we are taking the approach that,
-							 * if that ever happens, we'll throw the exception and stop all the functionalities, because
-							 * something terribly wrong would have happened
-							 */
 							deadLetterDispatcher.send(
 									"ECOMMERCE_DEADLETTER", 
 									messageConsumed.getCorrelationId().toString(), 

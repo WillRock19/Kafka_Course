@@ -1,4 +1,4 @@
-package curso_kafka_ecommerce;
+package curso_kafka.dispatcher;
 
 public class Message<T>
 {

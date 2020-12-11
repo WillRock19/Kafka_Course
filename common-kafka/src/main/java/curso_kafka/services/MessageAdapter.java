@@ -10,8 +10,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
-import curso_kafka_ecommerce.CorrelationId;
-import curso_kafka_ecommerce.Message;
+import curso_kafka.dispatcher.CorrelationId;
+import curso_kafka.dispatcher.Message;
 
 public class MessageAdapter implements JsonSerializer<Message>, JsonDeserializer<Message>{
 

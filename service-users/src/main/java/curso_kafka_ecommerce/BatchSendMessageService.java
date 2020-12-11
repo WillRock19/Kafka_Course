@@ -10,6 +10,9 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
+import curso_kafka.consumer.KafkaService;
+import curso_kafka.dispatcher.KafkaDispatcher;
+import curso_kafka.dispatcher.Message;
 import curso_kafka.models.User;
 
 public class BatchSendMessageService {

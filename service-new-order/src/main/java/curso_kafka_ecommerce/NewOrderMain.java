@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
+import curso_kafka.dispatcher.CorrelationId;
+import curso_kafka.dispatcher.KafkaDispatcher;
 import curso_kafka.models.Order;
 
 public class NewOrderMain {
@@ -23,9 +25,10 @@ public class NewOrderMain {
 					
 					var order = new Order(orderId, amount, userEmail);
 					var emailMessage = "Be welcome! We are processing your order :)";
-
-					orderDispatcher.send("ECOMMERCE_NEW_ORDER", userEmail, new CorrelationId(NewOrderMain.class.getName()), order);
-					emailDispatcher.send("ECOMMERCE_SEND_EMAIL", userEmail, new CorrelationId(NewOrderMain.class.getName()), emailMessage);
+					var correlationId = new CorrelationId(NewOrderMain.class.getName());
+					
+					orderDispatcher.send("ECOMMERCE_NEW_ORDER", userEmail, correlationId, order);
+					emailDispatcher.send("ECOMMERCE_SEND_EMAIL", userEmail, correlationId, emailMessage);
 				}
 			}
 		}	

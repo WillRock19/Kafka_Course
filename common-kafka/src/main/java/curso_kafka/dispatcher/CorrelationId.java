@@ -1,4 +1,4 @@
-package curso_kafka_ecommerce;
+package curso_kafka.dispatcher;
 
 import java.util.UUID;
 

@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import curso_kafka.dispatcher.CorrelationId;
+import curso_kafka.dispatcher.KafkaDispatcher;
 import curso_kafka.models.Order;
 
 public class NewOrderServlet extends HttpServlet {
