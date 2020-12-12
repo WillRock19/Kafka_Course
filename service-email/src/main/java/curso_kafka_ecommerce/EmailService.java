@@ -2,6 +2,7 @@ package curso_kafka_ecommerce;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
@@ -11,7 +12,8 @@ public class EmailService implements IConsumerService<String> {
 
 	public static void main(String[] args) throws InterruptedException, ExecutionException, IOException 
 	{
-		new ServiceProvider<>(EmailService::new).call();
+		var numberOfThreads = 5;
+		new ServiceRunner<>(EmailService::new).start(numberOfThreads);
 	}
 	
 	public String getTopic() {

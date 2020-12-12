@@ -71,8 +71,16 @@
 *		Now that we've refactored our service-email, we can start to run it in multiple threads.
 *
 *		We have now the serviceProvider() function. We want it yo be called 10 times. One approach would be make it implement the runnable
-*		interface. But we are not going to do this.
+*		interface. But we are not going to do this. The runnable does not allows to throw an exception inside of it... but there is another
+*		one who does.
 *
 *		We want to call that function N times, so we make it implements a callable of type void (because it'll never return anything).
 *
-*		
+*		When you do this, you'll have N instances consuming in a service group, so its good to make sure that each one of then has it's 
+*		own CLIENT_ID_CONFIG, a config we can add on the consumer properties (in our case, they already have).
+*
+*		But what if an exception is thrown when trying to generate a deadletter?
+*
+*			Then, the thread will die, but the others will keep running (actually, since we're creating with newFixedThreadPool, the library
+*			will restart the thread that falls... BUT, our consumer won't be submited again to that thread. In other words: the thread will
+*			be alive, our consumer won't).
