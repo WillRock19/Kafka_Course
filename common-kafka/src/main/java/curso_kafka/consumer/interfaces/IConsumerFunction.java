@@ -1,4 +1,4 @@
-package curso_kafka.consumer;
+package curso_kafka.consumer.interfaces;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 

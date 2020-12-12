@@ -84,3 +84,25 @@
 *			Then, the thread will die, but the others will keep running (actually, since we're creating with newFixedThreadPool, the library
 *			will restart the thread that falls... BUT, our consumer won't be submited again to that thread. In other words: the thread will
 *			be alive, our consumer won't).
+*
+*		Since we are here, let's go add the same "thread support" to the ReadingReportService. Once we've done it, we can run it and go to
+*		the cmdline and see what are the consumer groups being executed. You'll see something like this, if you've been following this course
+*		from the beginning:
+*
+* GROUP                                  					TOPIC                     PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  	LAG      									CONSUMER-ID 									HOST            		CLIENT-ID	
+*                                           
+* ECOMMERCE_USER_GENERATE_READING_REPORT curso_kafka_ecommerce.ReadingReportService 	  1          0               0               0        7c1d3b0f-8d77-40af-8ab2-4f1aba6afd99-92d167c2-7fe9-4c9e-b190-9689d5440985 	/192.168.0.11   7c1d3b0f-8d77-40af-8ab2-4f1aba6afd99
+* ECOMMERCE_USER_GENERATE_READING_REPORT curso_kafka_ecommerce.ReadingReportService 	  2          0               0               0        830d4708-a65f-4da1-a090-df5989ec46cc-7190aacf-0192-49b8-9286-aff774f39055 	/192.168.0.11   830d4708-a65f-4da1-a090-df5989ec46cc
+* ECOMMERCE_USER_GENERATE_READING_REPORT curso_kafka_ecommerce.ReadingReportService 	  0          0               0               0        6fb31ff7-f7b9-444f-8793-012f323b7f63-d1145e5f-28dc-4bdf-9bfe-c8113d92a024 	/192.168.0.11   6fb31ff7-f7b9-444f-8793-012f323b7f63
+* 
+* Consumer group 'EmailService' has no active members.
+*
+*
+*		Note how there is three consumers being executed for the topic we've changed. Tha happens because we've configure our kafka's broker
+*		to use 3 partitions when executed... and, inside our code, we've chose to run 5 threads with instances of the ReadingReportService.
+*
+*			In other words: there are 5 ReadingReportService instances running in 5 different threads, but just 3 of then are in kafka's 
+*			partitions since we've enabled the broker to execute three partitions at time (remember, that was defined in the server.properties
+*			file, that stays in config folder).
+*
+*

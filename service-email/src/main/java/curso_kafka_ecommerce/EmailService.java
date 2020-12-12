@@ -2,10 +2,11 @@ package curso_kafka_ecommerce;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
+import curso_kafka.consumer.ServiceRunner;
+import curso_kafka.consumer.interfaces.IConsumerService;
 import curso_kafka.dispatcher.Message;
 
 public class EmailService implements IConsumerService<String> {

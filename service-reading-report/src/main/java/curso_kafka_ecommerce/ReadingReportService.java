@@ -3,33 +3,36 @@ package curso_kafka_ecommerce;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import curso_kafka.consumer.KafkaService;
+import curso_kafka.consumer.ServiceRunner;
+import curso_kafka.consumer.interfaces.IConsumerService;
 import curso_kafka.dispatcher.Message;
 import curso_kafka.models.User;
 
-public class ReadingReportService {
+public class ReadingReportService implements IConsumerService<User> {
 
 	private static final Path source = new File("src/main/resources/report.txt").toPath();
 	
-	public static void main(String[] args) throws InterruptedException, ExecutionException, IOException {
-		var readingReportService = new ReadingReportService();
-		
-		try(var service = new KafkaService<>(
-				ReadingReportService.class.getTypeName(), 
-				"ECOMMERCE_USER_GENERATE_READING_REPORT",  
-				readingReportService::parseRecord,
-				new HashMap<>()))
-		{
-			service.run();
-		}	
+	public static void main(String[] args) throws InterruptedException, ExecutionException, IOException 
+	{
+		var numberOfThreads = 5;
+		new ServiceRunner<>(ReadingReportService::new).start(numberOfThreads);
+	}
+	
+	@Override
+	public String getTopic() {
+		return "ECOMMERCE_USER_GENERATE_READING_REPORT";
 	}
 
-	private void parseRecord(ConsumerRecord<String, Message<User>> record) throws IOException 
+	@Override
+	public String getConsumerGroup() {
+		return ReadingReportService.class.getTypeName();
+	}
+
+	public void parseRecord(ConsumerRecord<String, Message<User>> record) throws IOException 
 	{
 		var message = record.value();
 		var user = message.getPayload();
@@ -43,4 +46,6 @@ public class ReadingReportService {
 		
 		System.out.println("File created: " + target.getAbsolutePath());
 	}
+
+
 }

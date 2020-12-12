@@ -1,4 +1,4 @@
-package curso_kafka_ecommerce;
+package curso_kafka.consumer.interfaces;
 
 public interface IServiceFactory<T>
 {

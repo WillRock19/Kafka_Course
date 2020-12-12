@@ -1,11 +1,11 @@
-package curso_kafka_ecommerce;
+package curso_kafka.consumer;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
-import curso_kafka.consumer.KafkaService;
+import curso_kafka.consumer.interfaces.IServiceFactory;
 
 public class ServiceProvider<T> implements Callable<Void> {
 

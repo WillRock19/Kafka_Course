@@ -1,6 +1,8 @@
-package curso_kafka_ecommerce;
+package curso_kafka.consumer;
 
 import java.util.concurrent.Executors;
+
+import curso_kafka.consumer.interfaces.IServiceFactory;
 
 public class ServiceRunner<T> 
 {

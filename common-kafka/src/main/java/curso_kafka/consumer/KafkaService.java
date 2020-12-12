@@ -14,6 +14,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
+import curso_kafka.consumer.interfaces.IConsumerFunction;
 import curso_kafka.dispatcher.KafkaDispatcher;
 import curso_kafka.dispatcher.Message;
 import curso_kafka.services.GsonDeserializer;
