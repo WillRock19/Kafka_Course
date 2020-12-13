@@ -20,7 +20,7 @@ public class ServiceProvider<T> implements Callable<Void> {
 	{
 		var serviceToRun = factory.create();
 		
-		try(var kafkaService = new KafkaService<>(serviceToRun.getTopic(), serviceToRun.getConsumerGroup(), 
+		try(var kafkaService = new KafkaService<>(serviceToRun.getConsumerGroup(), serviceToRun.getTopic(), 
 												  serviceToRun::parseRecord, Map.of()))
 		{
 			kafkaService.run();

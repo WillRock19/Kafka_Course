@@ -112,4 +112,45 @@
 *
 *	A. Offset latest and earliest
 *
-*		
+*		Remember: by default, our partitions use 3 replicas. Let's start this class erasing the data directory for each server and zookeper, and
+*		restarting everything once more. Then, let's update our service-new-order to use the thread way we've created in last class, and put it 
+*		to use a single thread.
+*
+*		Once done it, let's the HTTP service WITHOUT the service-new-email and see what happens. When we execute the /new of the http service, kafka 
+*		will create a topic (the one called by the servlet), but no consumer group is created, since we've not started our consumer yet. Now, we run 
+*		our service-new-order.
+*
+*		If you read the service-new-order logs, you'll discover it reset the partition offset. Why? When we start a new consumer group, it can begin
+*		to listen from two points: the latest message we have access to or the first message from now on. That's a configuration that YOU must define
+*		and add to the consumer properties.
+*
+*		The property who tells the consumer from which point it mus start listening is the AUTO_OFFSET_RESET_CONFIG, that tells Kafka what to do when
+*		there's not a initial offset in Kafka or if the current offset does not exist in the server anymore (because the data has been deleted). 
+*
+*			Let's imagine I'm starting a new consumer. There's no offset in it (he doesn't consumed any messages to have offsets inside of it), but
+*			there are 5 messages in the broker. So... the consumer must start the offset from 0 or from 6? By default, Kafka make it start from last,
+*			in other words, from 6. 
+*
+*				Starting from latest: 	you might lose messages if they already are in the broker but not in the consumer;
+*
+*				Starting from earliest:	imagine you receive messages, you process then... and your consumer falls. When it starts again, it might consume
+*				the same messages once more (because they wasn't commited), and, therefore, execute the same job twice;
+*
+*			The AUTO_OFFSET_RESET_CONFIG has two values:
+*
+*				Smallest: automatically reset the offset to the smallest offset (if I have 1 million messages, but the oldest have been deleted and I 
+*						  just have the latest 100.000, then the smallest will be the message 900.000, the smallest that Kafka is capable of deliver
+*						  because it still on disk).
+*						  
+*				Latest:   the biggest of all messages that are stored in Kafka;
+*
+*					-> IMPORTANT: in the docs, Kafka says the property "latest" is actually "largest". That is wrong. There have been a change in it... and they
+*						   	  	  didn't updated the docs.					
+*
+*				Disabled: throws exception to the consumer if no previous offset is found for the consumer's group. In other words: does not want to
+*						  consume anything so it won't take the risk of consume a message again or lose messages;
+*
+*
+*				In our code, we'll configure the AUTO_OFFSET_RESET_CONFIG's property to each one, so we can see how the consumer works with each one.
+*		.   
+*
