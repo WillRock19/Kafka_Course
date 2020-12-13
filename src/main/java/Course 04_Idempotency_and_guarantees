@@ -154,3 +154,10 @@
 *				In our code, we'll configure the AUTO_OFFSET_RESET_CONFIG's property to each one, so we can see how the consumer works with each one.
 *		.   
 *
+*	
+*
+* 													CLASS 04_Dealing with duplicated messages
+*
+*	A. The duplicated message problem
+*
+*		
