@@ -160,4 +160,22 @@
 *
 *	A. The duplicated message problem
 *
-*		
+*		The messages that a broker receives are commited from time to time. There's a default interval, but we can configure it ourselves. The thing is... somethimes
+*		we want to make a commit manually. Imagine the situation: our consumer gets a message from the broker, process it and falls down. The broker was not updated
+*		with the info that the message was consumed (it was not commited yet), so it still thinks the message needs to be consumed. A new consumer startup then, and
+*		the message will be given to it... and the new consumer will process it again.
+*
+*		Stinks, doesn't?
+*
+*		So, how to deal with this? First, let's think how we can configure our services (consumers and producers) to work with the message sending:
+*
+*			1. We can configure the services to not care if we loose messages;
+*
+*			2. We can configure the services to make sure everybody must be in sync all the time (using "acks=all"), and then we can configure 
+*			   the minimum of replicas that must be in sync
+*
+*				-> To configure the minimum number of replicas that must be in sync, we can use the property MIN_IN_SYNC_REPLICAS_CONFIG
+*
+*			3. We can configure the services to make sure only ONE message is received and processed;
+*
+*				
