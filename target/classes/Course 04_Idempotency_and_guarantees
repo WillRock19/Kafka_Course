@@ -231,4 +231,24 @@
 *		But there is another approach... a more "natural" one. We will see it in the next class.
 *
 *
-* 																CLASS 05_Imdepotency
+* 																CLASS 05_Idempotence
+*
+*	A. Natural ID and idempotence on the database
+*
+*		As you could see, the approach from last class works, but makes us have to work with the offsets ourselves. That's kind of a bummer, more so because Kafka already make it's 
+*		magic with them.
+*
+*		But there is another way. A better way. The BIRD WAY! Sorry, I got carried away. Ok, so, about the better way: let's talk about the CreateUserService we have. It receives a
+*		message, check if the user already exists in the database and then, ONLY THEN, saves it. That makes the collateral effects caused by a message received N not destructive, 
+*		because it going to save it only one time and ignore all the others.
+*
+*			Idempotence: is the property of certain operations in mathematics and computer science whereby they can be applied multiple times without changing the result beyond the 
+*						 initial application. In other words: the situation that already happens in our CreateUserService when saving the same user twice.
+*
+*
+*		Every message HAS an unique identifier. One possible way to identify it is like in the link from last class, using the "topic + consumer-group + partition + offset", since 
+*		all messages has this informations - the problem in use them is that we have to make sure the rebalace is working properly, since the messages goes from one offset to another;
+*
+*			So... thinking about this, we might want to create OUR own identifier to the message, to use it without those problems.
+*
+*		So, let's start this class refactoring the CreateUserService to be executed in the threads way we've created.
