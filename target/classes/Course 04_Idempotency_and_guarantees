@@ -7,7 +7,7 @@
 *		the ones that work with dispatchers in different packages.
 * 
 *		Then, let's talk about the e-mail service. Do we really need a service for that? Couldn't be just a library? Course
-*		it could. The difficult whould be that the e-mail is an external system, and the way we'll communicate with it is 
+*		it could. The difficult would be that the e-mail is an external system, and the way we'll communicate with it is 
 *		important.
 *
 *
@@ -15,7 +15,7 @@
 *
 *		Imagine that we've used the e-mail as a common library, as we're using the common-kafka. Now, I want to change the
 *		way the e-mail is generated from using Azure to AWS. If the e-mail is just a library, every service that implements
-*		it must migrate at same time BEFORE I can start use the new way, which creates a depedency between all the services
+*		it must migrate at same time BEFORE I can start use the new way, which creates a dependency between all the services
 *		and the library.
 *
 *		That's a problem, a really bad one. Using a service, we can avoid that kind of problem, making the evolution of the
@@ -71,7 +71,7 @@
 *
 *		Now that we've refactored our service-email, we can start to run it in multiple threads.
 *
-*		We have now the serviceProvider() function. We want it yo be called 10 times. One approach would be make it implement the runnable
+*		We have now the serviceProvider() function. We want it to be called 10 times. One approach would be make it implement the runnable
 *		interface. But we are not going to do this. The runnable does not allows to throw an exception inside of it... but there is another
 *		one who does.
 *
@@ -83,7 +83,7 @@
 *		But what if an exception is thrown when trying to generate a deadletter?
 *
 *			Then, the thread will die, but the others will keep running (actually, since we're creating with newFixedThreadPool, the library
-*			will restart the thread that falls... BUT, our consumer won't be submited again to that thread. In other words: the thread will
+*			will restart the thread that falls... BUT, our consumer won't be submitted again to that thread. In other words: the thread will
 *			be alive, our consumer won't).
 *
 *		Since we are here, let's go add the same "thread support" to the ReadingReportService. Once we've done it, we can run it and go to
@@ -124,7 +124,7 @@
 *		to listen from two points: the latest message we have access to or the first message from now on. That's a configuration that YOU must define
 *		and add to the consumer properties.
 *
-*		The property who tells the consumer from which point it mus start listening is the AUTO_OFFSET_RESET_CONFIG, that tells Kafka what to do when
+*		The property who tells the consumer from which point it must start listening is the AUTO_OFFSET_RESET_CONFIG, that tells Kafka what to do when
 *		there's not a initial offset in Kafka or if the current offset does not exist in the server anymore (because the data has been deleted). 
 *
 *			Let's imagine I'm starting a new consumer. There's no offset in it (he doesn't consumed any messages to have offsets inside of it), but
@@ -160,9 +160,9 @@
 *
 *	A. The duplicated message problem
 *
-*		The messages that a broker receives are commited from time to time. There's a default interval, but we can configure it ourselves. The thing is... somethimes
+*		The messages that a broker receives are committed from time to time. There's a default interval, but we can configure it ourselves. The thing is... sometimes
 *		we want to make a commit manually. Imagine the situation: our consumer gets a message from the broker, process it and falls down. The broker was not updated
-*		with the info that the message was consumed (it was not commited yet), so it still thinks the message needs to be consumed. A new consumer startup then, and
+*		with the info that the message was consumed (it was not committed yet), so it still thinks the message needs to be consumed. A new consumer startup then, and
 *		the message will be given to it... and the new consumer will process it again.
 *
 *		Stinks, doesn't?
@@ -178,4 +178,55 @@
 *
 *			3. We can configure the services to make sure only ONE message is received and processed;
 *
+*
+*	B. Kafka Transaction
+*
+*		We started discussing the following POST: https://itnext.io/kafka-transaction-56f022af1b0c
+*
+*		So, there are situations where we want to consume a message at least once, sometimes we want to consume it at most once... but there are times we need it to be
+*		consumed EXACTLY once. So we need to configure our Producer and our Consumer to works in this situation.
+*
+*		There are many configurations that we need to add to the Producer so it works like this (you can see then in the link above).
+*
+*		The consumer has much more work to do. We must:
+*
+*			1. Deactivate the auto commit (so noting will be committed while the consumer is processing the message);
+*
+*			2. Set the AUTO_OFFSET_RELEASE_CONFIG to earliest, so we can deal with all messages from the beginning;
+*
+*			3. Set the ISOLATION_LEVEL_CONFIG to read_committed, which means only committed (in the sense of "sended to the readers and all the necessary replicas")
+*			   messages will be consumed;
+*
+*				-> There is other configurations to the isolation level. There are situations where when a message is written in the broker, some consumer might read
+*				   it even if the producer did not received any confirmation, even with "ack=all".
+*
+*				-> So, as you can see, the "ack=all" and the "isolation level" can work together to make this work like a boss.
+*
+*
+*		After this configurations, we must refactor our consumer service to work with some new code. In the link, they use a database to save the information about
+*		the message that was processed. To do so, we must change our code to:
+*
+*			1. Add a new TransactionalConsumerRebalanceListener on subscribe, to help the consumer to rebalance the messages;
+*
+*			2. Ask the assignments (partitions) to our consumer, running through it all to access the informations of each one;
+*
+*			3. For each partition, we must:
+*
+*				3.1. Understand in which point we are inside the partition (what is the offset being processed). Since we've configured the consumer to read all
+*					 messages from the beginning, we assume that we are storing the current messages in some place. In the link, the author assumes we are storing
+*					 then in a database;
 *				
+*				3.2. Me make a "seek" in the consumer's partition, so it goes to the offset we've retrieved from the database. We put each of the partitions in
+*					 the desired position (we are changing an external object here, affecting the reading position from each of the partitions in real-time);
+*
+*				3.3. Once we have all the partitions in the desired offset, we start consuming from then all (example: the last on in database is the fifth. So we start consuming the sixth);
+*
+*				3.4. We get the message, process it... then save in the database that the message X, from the group Y, topic Z and partition W, was saved.
+*
+*				3.5. After saving, we commit the database transaction and guarantee it will be saved only after the message was processed.
+*
+*
+*		This approach will enable you us to process a message successfully one single time. If something goes wrong, you might want to process the message again, or 
+*		at least try to, but if it WORKS... it will be processed only that time, never again. FUCK YEAH <3
+*
+*		But there is another approach... a more "natural" one. We will see it in the next class.
