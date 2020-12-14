@@ -280,4 +280,32 @@
 *		twice and adding a new orderId each time. In other words: the fast delegate approach saved us and helped us to have a unique ID for each of the messages that kafka receives and process 
 *		inside of it.
 *
-*		Pretty dope, huh? 
+*		Pretty dope, huh?
+*
+*
+*	D. Idempotence in APIs
+*
+*		There are a lot of situations when we don't have an natural Id, like the one we saw in the topic C. For instance, if the user send an HTTP request with data from a buy, but that buy does
+*		not keep state in the server (it's not part of a cart, it's just a request that shall be processed). In that schenario, we could receive an HTTP request with all the buy information and 
+*		the client might press the F5 multiple times, therefore sending those info multiple times. In that aspect, the Fast Delegated we've used in last topic won't be enough, because each of 
+*		those messages will reach the server with the SAME data, but different message's id (in other words: the request will be different, but the data being processed will be the same, so 
+*		we'll keep processing something twice).
+*
+*		But, let's think: we are using a correlationId, remember? We say that every message in our system has an identification... that is the correlation Id (remember that happens because we
+*		have an oneness between every correlationId inside our application. Let's suppose we are in one of the scenarios I've talked about, when the user can press F5 and send the same data in
+*		a different HTTP... I'll always have an unique ID for each message, the correlationID. But what if the message was not send to the Messageria, but to the server, to my API, directly? 
+*
+*			In this situation, I'll have to a filter in my API, something to guarantee that the POST from the client has an unique id that will be received in every request with the same data,
+*			an identification that I can use to make the idempotence works inside my API.
+*
+*			But then, there's more: you'll agree we added an idempotence guarantee to the fraud-service. But what if we whant to add it in other services? Should we just create databases inside
+*			every service, one by one, to make sure this works? Well, no. In this kind of schenario, what makes more sense is create a layer responsible for defining if the message has already 
+*			been executed or not.
+*
+*			So, we can do this. But, how? We could create a service specialized in this... OR, add this validation in our servlet. Think about it: if we just add this kind of validation in our 
+*			servelet, besides guarantee all the messages where already processed BEFORE they entered the Kafka's kingdom, we'll also guarantee that any message that goes straight yo my server
+*			and does not reach a Kafka's broker is unique.
+*
+*				A win-win situation, don't you think?
+*
+*				THIS is what we're gonna do right now. 
