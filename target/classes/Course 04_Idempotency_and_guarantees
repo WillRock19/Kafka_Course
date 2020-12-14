@@ -296,16 +296,34 @@
 *		a different HTTP... I'll always have an unique ID for each message, the correlationID. But what if the message was not send to the Messageria, but to the server, to my API, directly? 
 *
 *			In this situation, I'll have to a filter in my API, something to guarantee that the POST from the client has an unique id that will be received in every request with the same data,
-*			an identification that I can use to make the idempotence works inside my API.
+*			and that identification shall be used to make the idempotence works inside my API (just like I created the correlationId on my NewOrderServelet, the client-side app should create
+*			his id to send with the HTTP request).
 *
-*			But then, there's more: you'll agree we added an idempotence guarantee to the fraud-service. But what if we whant to add it in other services? Should we just create databases inside
-*			every service, one by one, to make sure this works? Well, no. In this kind of schenario, what makes more sense is create a layer responsible for defining if the message has already 
+*			But there's more: you'll agree we added an idempotence guarantee to the fraud-service. But what if we want to add it in other services? Should we just create databases inside
+*			every service, one by one, to make sure this works? Well, no. In this kind of scenario, what makes more sense is create a layer responsible for defining if the message has already 
 *			been executed or not.
 *
-*			So, we can do this. But, how? We could create a service specialized in this... OR, add this validation in our servlet. Think about it: if we just add this kind of validation in our 
-*			servelet, besides guarantee all the messages where already processed BEFORE they entered the Kafka's kingdom, we'll also guarantee that any message that goes straight yo my server
-*			and does not reach a Kafka's broker is unique.
+*			So, we can do this. But, how? We could:
 *
-*				A win-win situation, don't you think?
+*				1. create a service specialized to do this. In this situation, the Fast Delegate would send a message to a topic a single service hears, and than
+*				   it would guarantee the message is executed only once. 
 *
-*				THIS is what we're gonna do right now. 
+*				2. add this validation to our Servlet. Think about it: if we just add this kind of validation in our servelet, besides guarantee all the messages where already processed 
+*				   BEFORE they entered in Kafka's kingdom, we'll also make sure that any message that goes straight to my server and does not reach a Kafka's broker is unique.
+*
+*			The decision here depends more in how we want to distribute the responsibilities between our services than "whats right and whats wrong".
+*
+*			So:
+*				
+*					-> If the HTTP server (the API) can access the database, we could stick that validation there;
+*					
+*					-> If it's not, we could stick it into a service specialized in guarantee that the message is executed only once;
+*
+*							THIS is what we're going to do right now. 
+*
+*							OBS: in this scenario, it's important to keep the validation inside the fraud-service because it's something inherent to it's own functionalities.
+*
+*			Since we're going to validate this in the servlet, we're going to take some steps. First, we're going to create a connection to the database in each request (this is NOT a good
+*			practice - the correct way would be create a connection poll from our servlet to consume from -, but we're doing it to make it simple and to keep with the class objectives).
+*
+*			

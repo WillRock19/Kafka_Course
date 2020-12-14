@@ -44,6 +44,11 @@ public class LocalDatabase
 		return preparedStatement.executeQuery();
 	}
 	
+	public void close() throws SQLException 
+	{
+		connection.close();
+	}
+	
 	private PreparedStatement prepareStatement(String statement, String ...parameters) throws SQLException 
 	{
 		var preparedStatement = this.connection.prepareStatement(statement);
@@ -53,4 +58,5 @@ public class LocalDatabase
 		
 		return preparedStatement;
 	}
+
 }
