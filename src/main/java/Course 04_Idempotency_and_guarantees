@@ -216,10 +216,9 @@
 *					 messages from the beginning, we assume that we are storing the current messages in some place. In the link, the author assumes we are storing
 *					 then in a database;
 *				
-*				3.2. Me make a "seek" in the consumer's partition, so it goes to the offset we've retrieved from the database. We put each of the partitions in
-*					 the desired position (we are changing an external object here, affecting the reading position from each of the partitions in real-time);
+*				3.2. Me make a "seek" in the consumer's partition, so it goes to the offset we've retrieved from the database. ;
 *
-*				3.3. Once we have all the partitions in the desired offset, we start consuming from then all (example: the last on in database is the fifth. So we start consuming the sixth);
+*				3.3. Once we have the partition in the desired offset, we start consuming its messages (example: the last on in database is the fifth. So we start consuming the sixth);
 *
 *				3.4. We get the message, process it... then save in the database that the message X, from the group Y, topic Z and partition W, was saved.
 *
