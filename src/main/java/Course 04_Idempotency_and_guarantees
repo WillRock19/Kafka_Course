@@ -264,4 +264,20 @@
 *
 *		To do so, let's extract the database generation from CreateUserService to a common class, so all our services might use it if they wanted.
 *
-*		
+*	
+*	C. Idempotence and Fast Delegate
+*
+*		Let's start updating the FraudService to use the database (remember, we want to make sure that a message will only be processed once, since there are times where our fraud's algorithm
+*		can't take it being processed more than that). But, before that, let's update it to the new format, allowing it to execute different instances of the fraud service in different threads.
+*
+*		Once we've done that, we are going to create a frauds database to store the info about the messages, if they where already processed or not. We are going to create a table Orders that's
+*		going to store the message id and if it was a fraud... and store that info. The problem: what should we use as the message id? We cannot generate the id inside our fraud service, because
+*		if we do so the same message would have a different id generated to it each time it's consumed, therefore we would process it more than one time. Crapbaskets. So, what could we possibly
+*		use as a message id?
+*
+*		If we review our own services, we can see that in the NewOrerServelet we create a orderId BEFORE send the message to kafka. We did that so we could use the Fast Delegate approach, and 
+*		get rid of the message as soon as possible. So... we already have an orderId, that's generated before the message goes to kafka, so we do not have to worry with the message being processed
+*		twice and adding a new orderId each time. In other words: the fast delegate approach saved us and helped us to have a unique ID for each of the messages that kafka receives and process 
+*		inside of it.
+*
+*		Pretty dope, huh? 

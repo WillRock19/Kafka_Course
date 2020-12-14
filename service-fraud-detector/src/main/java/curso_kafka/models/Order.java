@@ -26,6 +26,10 @@ public class Order
 		return email;
 	}
 	
+	public String getOrderId() {
+		return orderId;
+	}
+	
 	@Override
 	public String toString() {
 		return String.format("Order{ orderId='%s', amount=%s, email='%s' };", orderId, amount, email);
