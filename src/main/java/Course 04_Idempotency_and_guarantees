@@ -252,3 +252,16 @@
 *			So... thinking about this, we might want to create OUR own identifier to the message, to use it without those problems.
 *
 *		So, let's start this class refactoring the CreateUserService to be executed in the threads way we've created.
+*
+*
+*	B. Extracting the common database
+*
+*		After changing the last project, we start to look for others. The Fraud service, for instance; it will receive a message N times and check for frauds in it N times. In our little
+*		app, thats not a problem; in real projects, it is - the fraud algorithm might not like this.
+*
+*		So, with that said, we must deal with this. To make it only work once, we'll execute as the CreateNewService, saving the messages in database so we can have a history if it was
+*		already processed or not.
+*
+*		To do so, let's extract the database generation from CreateUserService to a common class, so all our services might use it if they wanted.
+*
+*		

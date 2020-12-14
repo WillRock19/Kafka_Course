@@ -1,8 +1,6 @@
 package curso_kafka_ecommerce;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -11,15 +9,17 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import curso_kafka.consumer.ServiceRunner;
 import curso_kafka.consumer.interfaces.IConsumerService;
+import curso_kafka.database.LocalDatabase;
 import curso_kafka.dispatcher.Message;
 import curso_kafka.models.Order;
 
-public class CreateUserService implements IConsumerService<Order> {
-	
-	private Connection connection;
+public class CreateUserService implements IConsumerService<Order> 
+{
+	private final LocalDatabase database;
 
-	CreateUserService() throws SQLException {
-		initializeDatabaseConnection();	
+	CreateUserService() throws SQLException 
+	{
+		this.database = new LocalDatabase("users_database");
 		createUsersTable();
 	}
 	
@@ -55,41 +55,23 @@ public class CreateUserService implements IConsumerService<Order> {
 		}
 	}
 	
-	private void initializeDatabaseConnection() throws SQLException {
-		var connectionString = "jdbc:sqlite:target/users_database.db";
-		connection = DriverManager.getConnection(connectionString);
-	}
-	
-	private void createUsersTable() {
-		try {
-		connection.createStatement().execute("create table Users(" +
+	private void createUsersTable() 
+	{
+		this.database.createIfNotExists("create table Users(" +
 				"uuid varchar(200) primary key," + 
-				"email varchar(200))");	
-		}
-		catch(SQLException ex) {
-			/* This will be to deal with the exception when the database ALREADY EXISTS (but 
-			 * this might catch other exceptions. Since in the class we didn't care about 
-			 * this situation, I won't care here for now)
-			 */
-			ex.printStackTrace();
-		}
+				"email varchar(200))");
 	}
 	
-	private void insertNewUser(String email) throws SQLException {
-		var insertStatement = connection.prepareStatement("insert into Users (uuid, email) values (?,?)");
-		
-		insertStatement.setString(1, UUID.randomUUID().toString());
-		insertStatement.setString(2, email);
-		
-		insertStatement.execute();
+	private void insertNewUser(String email) throws SQLException 
+	{
+		var uuid = UUID.randomUUID().toString();	
+		this.database.Update("insert into Users (uuid, email) values (?,?)", uuid, email);
 	}
 
-	private boolean isNewUser(String email) throws SQLException {
-		var exists = connection.prepareStatement("select uuid from Users where email = ? limit 1");
-		exists.setString(1, email);
-		
-		var results = exists.executeQuery();
-		
+	private boolean isNewUser(String email) throws SQLException 
+	{
+		var results = this.database.ExecuteQuery("select uuid from Users where email = ? limit 1", email);
+
 		/* If next() return a new line, the register exists. If it doesn't, it means it's a new one.*/
 		return !results.next();
 	}
