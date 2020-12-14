@@ -154,6 +154,9 @@
 *				In our code, we'll configure the AUTO_OFFSET_RESET_CONFIG's property to each one, so we can see how the consumer works with each one.
 *		.   
 *
+*		IMPORTANT: this configurations will be applied only in the first time our consumer starts. If we run the consumer with a configuration and then try to
+*				   change it, it will run with the same as before (unless we clean all data from our kafka from the folders we've defined inside the file
+*				   server.properties)
 *	
 *
 * 													CLASS 04_Dealing with duplicated messages
