@@ -328,5 +328,4 @@
 *
 *			Since we're going to validate this in the servlet, we're going to take some steps. First, we're going to create a connection to the database in each request (this is NOT a good
 *			practice - the correct way would be create a connection poll from our servlet to consume from -, but we're doing it to make it simple and to keep with the class objectives).
-*
-*			
+*		
